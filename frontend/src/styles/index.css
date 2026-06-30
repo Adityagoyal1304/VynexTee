@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/* ─── Brand Theme ─────────────────────────────────────────── */
+@theme {
+  --color-brand-navy: #0d0d1a;
+  --color-brand-dark: #0a0a16;
+  --color-brand-blue: #60a5fa;
+  --color-brand-accent: #3b82f6;
+  --color-brand-cream: #f8f8f8;
+  --color-brand-muted: #94a3b8;
+  --color-brand-card: #111827;
+  --color-brand-border: #1e293b;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Syne", "Inter", sans-serif;
+
+  --animate-fadeIn: fadeIn 0.4s ease-out both;
+  --animate-badgePop: badgePop 0.3s ease-out;
+  --animate-shimmer: shimmer 1.8s infinite linear;
+  --animate-float: float 3s ease-in-out infinite;
+}
+
+/* ─── Keyframes ───────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badgePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+/* ─── Base Reset & Global Styles ──────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background-color: #0a0a16;
+  color: #f8f8f8;
+  line-height: 1.6;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ─── Custom Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d1a;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa;
+}
+
+/* ─── Selection ──────────────────────────────────────────── */
+::selection {
+  background: rgba(96, 165, 250, 0.3);
+  color: #f8f8f8;
+}
+
+/* ─── Page Animations ─────────────────────────────────────── */
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out both;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ─── Shimmer Skeleton ─────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #111827 25%,
+    #1e293b 50%,
+    #111827 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+}
+
+/* ─── Glass Morphism ──────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Gradient Text ───────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Focus Rings ─────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+/* ─── Product Card Hover ──────────────────────────────────── */
+.product-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px) scale(1.015);
+  box-shadow: 0 20px 60px rgba(96, 165, 250, 0.15);
+}
+
+/* ─── Cart Badge Pop ──────────────────────────────────────── */
+.badge-pop {
+  animation: badgePop 0.3s ease-out;
+}
+
+/* ─── Hero Glow ───────────────────────────────────────────── */
+.hero-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(96, 165, 250, 0.15) 0%, transparent 70%);
+}
+
+/* ─── Input Styling ───────────────────────────────────────── */
+input[type="email"],
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #1e293b;
+  border-radius: 0.5rem;
+  color: #f8f8f8;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="email"]:focus,
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b;
+}
