@@ -70,7 +70,7 @@ const Navbar = () => {
             aria-label="Vynextee home"
           >
             <img
-              src="/logo.png"
+              src="/logo.jpeg"
               alt="Vynextee logo"
               className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110"
             />

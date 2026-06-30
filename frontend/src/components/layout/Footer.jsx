@@ -14,7 +14,7 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-3 group mb-4" aria-label="Vynextee home">
               <img
-                src="/logo.png"
+                src="/logo.jpeg"
                 alt="Vynextee"
                 className="h-10 w-10 object-contain transition-transform group-hover:scale-110 duration-300"
               />
