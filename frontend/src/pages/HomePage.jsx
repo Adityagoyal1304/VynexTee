@@ -1,85 +1,102 @@
 // src/pages/HomePage.jsx
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { ArrowRight, Shirt, ShoppingBag, Zap, Shield, Truck, RefreshCw, Star, ChevronRight } from "lucide-react";
+import {
+  ArrowRight, Shirt, ShoppingBag, Zap, Shield, Truck, RefreshCw, Star, ChevronRight,
+} from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import ProductCard from "@/components/product/ProductCard";
 import Button from "@/components/ui/Button";
 
-// Newsletter validation schema
 const newsletterSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });
 
-// Value prop data
 const valueProps = [
-  { Icon: Truck, title: "Free Shipping", desc: "On orders above ₹999" },
-  { Icon: Shield, title: "100% Authentic", desc: "Genuine quality guaranteed" },
-  { Icon: RefreshCw, title: "Easy Returns", desc: "15-day hassle-free returns" },
-  { Icon: Zap, title: "Fast Dispatch", desc: "Ships within 24 hours" },
+  { Icon: Truck,     title: "Free Shipping",   desc: "On orders above ₹999" },
+  { Icon: Shield,    title: "100% Authentic",  desc: "Genuine quality guaranteed" },
+  { Icon: RefreshCw, title: "Easy Returns",    desc: "15-day hassle-free returns" },
+  { Icon: Zap,       title: "Fast Dispatch",   desc: "Ships within 24 hours" },
 ];
+
+// ── Reusable diamond decoration ────────────────────────────────────
+const Diamond = ({ size, top, left, right, bottom, variant = "outline", animClass = "", opacity = 1, zIndex = 0 }) => (
+  <div
+    className={`diamond ${
+      variant === "filled"  ? "diamond-filled"  :
+      variant === "accent"  ? "diamond-accent"  :
+      variant === "blue"    ? "diamond-blue"    :
+      "diamond-outline"
+    } ${animClass}`}
+    style={{
+      width: size, height: size,
+      top, left, right, bottom,
+      opacity, zIndex,
+    }}
+    aria-hidden="true"
+  />
+);
 
 const HomePage = () => {
   const { data: allProducts = [], isLoading } = useProducts();
 
-  // Pick 4 featured products (badge = Bestseller or first 4)
   const featured = allProducts
     .filter((p) => p.badge === "Bestseller")
     .slice(0, 4)
-    .concat(
-      allProducts.filter((p) => p.badge !== "Bestseller").slice(0, 4)
-    )
+    .concat(allProducts.filter((p) => p.badge !== "Bestseller").slice(0, 4))
     .slice(0, 4);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isSubmitting },
-  } = useForm({ resolver: zodResolver(newsletterSchema) });
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } =
+    useForm({ resolver: zodResolver(newsletterSchema) });
 
-  const onNewsletterSubmit = async (data) => {
-    await new Promise((r) => setTimeout(r, 600)); // simulate API
+  const onNewsletterSubmit = async () => {
+    await new Promise((r) => setTimeout(r, 600));
     toast.success("Thanks! We'll be in touch. 💙", {
       duration: 4000,
       style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
-      iconTheme: { primary: "#60a5fa", secondary: "#0a0a16" },
     });
     reset();
   };
 
   return (
     <div className="animate-fadeIn">
-      {/* ─── HERO ─────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex items-center overflow-hidden" aria-label="Hero">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a16] via-[#0d0d1a] to-[#0f172a]" />
-        <div className="hero-glow absolute inset-0" />
 
-        {/* Decorative grid */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#60a5fa 1px, transparent 1px), linear-gradient(90deg, #60a5fa 1px, transparent 1px)",
-            backgroundSize: "80px 80px",
-          }}
-        />
+      {/* ═══════════════════════════════════════════════════════════
+          HERO — flat dark block + diamond geometry
+      ══════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative min-h-screen flex items-center overflow-hidden"
+        style={{ backgroundColor: "var(--bg-nav)" }}
+        aria-label="Hero"
+      >
+        {/* ── Diamond decorations ── */}
+        <Diamond size="320px" top="-80px"   left="-80px"  variant="outline" opacity={0.25} animClass="diamond-float-3" />
+        <Diamond size="180px" top="60px"    left="160px"  variant="filled"  opacity={0.18} animClass="diamond-float-1" />
+        <Diamond size="90px"  top="180px"   left="80px"   variant="blue"    opacity={0.35} animClass="diamond-float-2" />
+        <Diamond size="420px" bottom="-120px" right="-100px" variant="outline" opacity={0.15} animClass="diamond-float-4" />
+        <Diamond size="220px" top="30px"    right="60px"  variant="filled"  opacity={0.12} animClass="diamond-float-2" />
+        <Diamond size="110px" bottom="100px" right="220px" variant="blue"   opacity={0.3}  animClass="diamond-float-1" />
+        <Diamond size="60px"  top="50%"     left="42%"    variant="accent"  opacity={0.5}  animClass="diamond-float-3" />
 
-        {/* Floating orbs */}
-        <div className="absolute top-1/4 right-1/4 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 h-64 w-64 rounded-full bg-purple-500/5 blur-3xl" />
-
-        <div className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+        {/* ── Content ── */}
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-36 sm:px-6 lg:px-8 w-full">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Text Side */}
+
+            {/* Text */}
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#60a5fa]/10 border border-[#60a5fa]/20 text-[#60a5fa] text-xs font-semibold tracking-widest uppercase mb-8">
-                <Star size={12} fill="currentColor" />
+              <div
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-8"
+                style={{
+                  background: "rgba(96,165,250,0.1)",
+                  border: "1px solid rgba(96,165,250,0.25)",
+                  color: "var(--accent)",
+                }}
+              >
+                <Star size={11} fill="currentColor" />
                 New Summer Collection 2024
               </div>
 
@@ -88,13 +105,13 @@ const HomePage = () => {
                 style={{ fontFamily: "Syne, sans-serif" }}
               >
                 Wear the{" "}
-                <span className="gradient-text">Bold.</span>
+                <span style={{ color: "var(--accent)" }}>Bold.</span>
                 <br />
                 Carry the{" "}
-                <span className="gradient-text">Statement.</span>
+                <span style={{ color: "var(--accent)" }}>Statement.</span>
               </h1>
 
-              <p className="text-lg text-white/50 leading-relaxed max-w-md mb-10">
+              <p className="text-lg leading-relaxed max-w-md mb-10" style={{ color: "rgba(255,255,255,0.5)" }}>
                 Premium oversized tees and designer bags crafted for the ones who don't blend in.
                 Free shipping on orders above ₹999.
               </p>
@@ -102,8 +119,9 @@ const HomePage = () => {
               <div className="flex flex-wrap gap-4">
                 <Link
                   to="/shop?category=tshirt"
-                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-[#3b82f6] text-white font-semibold text-base hover:bg-blue-500 transition-all duration-200 shadow-xl shadow-blue-500/25 focus:outline-none focus:ring-2 focus:ring-[#60a5fa] focus:ring-offset-2 focus:ring-offset-[#0a0a16] group"
-                  aria-label="Shop T-Shirts collection"
+                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl font-semibold text-base text-white transition-all duration-200 focus:outline-none group"
+                  style={{ backgroundColor: "var(--accent-deep)" }}
+                  aria-label="Shop T-Shirts"
                 >
                   <Shirt size={18} />
                   Shop T-Shirts
@@ -111,8 +129,9 @@ const HomePage = () => {
                 </Link>
                 <Link
                   to="/shop?category=bag"
-                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl bg-transparent border-2 border-white/15 text-white/80 font-semibold text-base hover:border-[#60a5fa]/50 hover:text-white hover:bg-[#60a5fa]/5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#60a5fa] group"
-                  aria-label="Shop Bags collection"
+                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl font-semibold text-base text-white/80 transition-all duration-200 hover:text-white focus:outline-none"
+                  style={{ border: "2px solid rgba(255,255,255,0.15)" }}
+                  aria-label="Shop Bags"
                 >
                   <ShoppingBag size={18} />
                   Shop Bags
@@ -120,93 +139,101 @@ const HomePage = () => {
               </div>
 
               {/* Stats */}
-              <div className="mt-12 flex gap-10">
+              <div className="mt-14 flex gap-10 pt-8" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
                 {[
                   { val: "10K+", label: "Happy Customers" },
-                  { val: "50+", label: "Unique Designs" },
-                  { val: "4.9★", label: "Average Rating" },
+                  { val: "50+",  label: "Unique Designs" },
+                  { val: "4.9★", label: "Avg Rating" },
                 ].map(({ val, label }) => (
                   <div key={label}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "Syne, sans-serif" }}>
-                      {val}
-                    </p>
-                    <p className="text-xs text-white/40 mt-0.5">{label}</p>
+                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "Syne, sans-serif" }}>{val}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{label}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Visual Side — floating product cards */}
+            {/* Right — product showcase blocks (no gradients, flat colored) */}
             <div className="hidden lg:grid grid-cols-2 gap-4 relative">
-              <div className="animate-float" style={{ animationDelay: "0s" }}>
-                <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-blue-500/10" style={{ backgroundColor: "#93C5FD" }}>
-                  <div className="aspect-square flex items-center justify-center">
-                    <Shirt size={64} className="text-[#1e3a5f] opacity-60" />
+              {[
+                { bg: "#93C5FD", label: "Icy Blue Tee",        price: "₹899",   Icon: Shirt },
+                { bg: "#0D0D1A", label: "Signature Tote",       price: "₹1,699", Icon: ShoppingBag },
+                { bg: "#F5F5F5", label: "Classic White Tee",    price: "₹699",   Icon: Shirt },
+                { bg: "#D4C5A9", label: "Urban Canvas Tote",    price: "₹1,199", Icon: ShoppingBag },
+              ].map(({ bg, label, price, Icon }, i) => (
+                <div
+                  key={label}
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    marginTop: i % 2 !== 0 ? "2rem" : "0",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    transform: "translateZ(0)",
+                  }}
+                >
+                  <div
+                    className="aspect-square flex items-center justify-center relative overflow-hidden"
+                    style={{ backgroundColor: bg }}
+                  >
+                    {/* Mini diamond inside card */}
+                    <div
+                      className="absolute"
+                      style={{
+                        width: 80, height: 80,
+                        background: "rgba(0,0,0,0.06)",
+                        transform: "rotate(45deg)",
+                        top: -20, right: -20,
+                      }}
+                    />
+                    <Icon
+                      size={52}
+                      style={{ color: bg === "#F5F5F5" || bg === "#D4C5A9" ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.3)" }}
+                    />
                   </div>
-                  <div className="p-3 bg-[#111827]">
-                    <p className="text-xs text-white/60">Icy Blue Longline Tee</p>
-                    <p className="text-sm font-bold text-white mt-0.5">₹899</p>
-                  </div>
-                </div>
-              </div>
-              <div className="animate-float mt-8" style={{ animationDelay: "0.4s" }}>
-                <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-blue-500/10" style={{ backgroundColor: "#0D0D1A" }}>
-                  <div className="aspect-square flex items-center justify-center border border-white/5">
-                    <ShoppingBag size={64} className="text-[#60a5fa] opacity-60" />
-                  </div>
-                  <div className="p-3 bg-[#111827]">
-                    <p className="text-xs text-white/60">Vynex Signature Tote</p>
-                    <p className="text-sm font-bold text-white mt-0.5">₹1,699</p>
-                  </div>
-                </div>
-              </div>
-              <div className="animate-float" style={{ animationDelay: "0.8s" }}>
-                <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ backgroundColor: "#F5F5F5" }}>
-                  <div className="aspect-square flex items-center justify-center">
-                    <Shirt size={64} className="text-gray-400 opacity-60" />
-                  </div>
-                  <div className="p-3 bg-[#111827]">
-                    <p className="text-xs text-white/60">Classic White Oversized</p>
-                    <p className="text-sm font-bold text-white mt-0.5">₹699</p>
-                  </div>
-                </div>
-              </div>
-              <div className="animate-float mt-8" style={{ animationDelay: "1.2s" }}>
-                <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ backgroundColor: "#D4C5A9" }}>
-                  <div className="aspect-square flex items-center justify-center">
-                    <ShoppingBag size={64} className="text-[#7c6a4e] opacity-60" />
-                  </div>
-                  <div className="p-3 bg-[#111827]">
-                    <p className="text-xs text-white/60">Urban Canvas Tote</p>
-                    <p className="text-sm font-bold text-white mt-0.5">₹1,199</p>
+                  <div className="p-3" style={{ backgroundColor: "#111827" }}>
+                    <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{label}</p>
+                    <p className="text-sm font-bold text-white mt-0.5">{price}</p>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
-          <div className="w-5 h-8 rounded-full border-2 border-white/30 flex items-start justify-center pt-1.5">
-            <div className="w-1 h-2 bg-white rounded-full animate-bounce" />
-          </div>
-          <p className="text-xs text-white/40 tracking-widest uppercase">Scroll</p>
-        </div>
+        {/* Bottom edge marker — solid color block divider */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-1"
+          style={{ backgroundColor: "var(--accent-deep)" }}
+        />
       </section>
 
-      {/* ─── VALUE PROPS ──────────────────────────────────────── */}
-      <section className="py-12 border-y border-white/5 bg-[#0d0d1a]" aria-label="Brand features">
+      {/* ═══════════════════════════════════════════════════════════
+          VALUE PROPS — contrasting flat surface
+      ══════════════════════════════════════════════════════════════ */}
+      <section
+        className="py-12"
+        style={{
+          backgroundColor: "var(--bg-section)",
+          borderBottom: "1px solid var(--border-light)",
+        }}
+        aria-label="Brand features"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
             {valueProps.map(({ Icon, title, desc }) => (
               <div key={title} className="flex items-center gap-4 group">
-                <div className="h-10 w-10 shrink-0 rounded-xl bg-[#60a5fa]/10 border border-[#60a5fa]/20 flex items-center justify-center group-hover:bg-[#60a5fa]/20 transition-colors">
-                  <Icon size={18} className="text-[#60a5fa]" />
+                <div
+                  className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center transition-colors"
+                  style={{
+                    background: "var(--accent-glow)",
+                    border: "1px solid var(--accent)",
+                    borderOpacity: 0.2,
+                  }}
+                >
+                  <Icon size={18} style={{ color: "var(--accent)" }} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">{title}</p>
-                  <p className="text-xs text-white/40">{desc}</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{title}</p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>{desc}</p>
                 </div>
               </div>
             ))}
@@ -214,24 +241,30 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ─── FEATURED PRODUCTS ────────────────────────────────── */}
-      <section className="py-20 bg-[#0a0a16]" aria-label="Featured products">
+      {/* ═══════════════════════════════════════════════════════════
+          FEATURED PRODUCTS — page background
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="py-20 section-page" aria-label="Featured products">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="text-xs text-[#60a5fa] font-semibold tracking-widest uppercase mb-2">
+              <p
+                className="text-xs font-semibold tracking-widest uppercase mb-2"
+                style={{ color: "var(--accent)" }}
+              >
                 Handpicked for you
               </p>
               <h2
-                className="text-3xl sm:text-4xl font-bold text-white"
-                style={{ fontFamily: "Syne, sans-serif" }}
+                className="text-3xl sm:text-4xl font-bold"
+                style={{ fontFamily: "Syne, sans-serif", color: "var(--text-primary)" }}
               >
                 Featured Products
               </h2>
             </div>
             <Link
               to="/shop"
-              className="hidden sm:flex items-center gap-2 text-sm text-white/50 hover:text-[#60a5fa] transition-colors group"
+              className="hidden sm:flex items-center gap-2 text-sm transition-colors group"
+              style={{ color: "var(--text-muted)" }}
               aria-label="View all products"
             >
               View All
@@ -242,7 +275,7 @@ const HomePage = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="rounded-2xl bg-[#111827] border border-white/5 animate-pulse">
+                <div key={i} className="rounded-2xl overflow-hidden animate-pulse" style={{ backgroundColor: "var(--bg-card)" }}>
                   <div className="aspect-square skeleton" />
                   <div className="p-4 space-y-3">
                     <div className="h-3 w-16 skeleton rounded-full" />
@@ -254,16 +287,19 @@ const HomePage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featured.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+              {featured.map((p) => <ProductCard key={p.id} product={p} />)}
             </div>
           )}
 
           <div className="mt-10 text-center sm:hidden">
             <Link
               to="/shop"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/70 text-sm font-medium hover:text-white hover:bg-white/10 transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all"
+              style={{
+                backgroundColor: "var(--bg-card)",
+                border: "1px solid var(--border-light)",
+                color: "var(--text-secondary)",
+              }}
             >
               View All Products <ArrowRight size={15} />
             </Link>
@@ -271,58 +307,108 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* ─── CATEGORY BANNER ──────────────────────────────────── */}
-      <section className="py-12 bg-[#0d0d1a]" aria-label="Shop by category">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {/* T-Shirts Banner */}
-            <Link
-              to="/shop?category=tshirt"
-              className="group relative rounded-3xl overflow-hidden border border-white/5 bg-gradient-to-br from-[#1e3a5f] to-[#0d0d1a] p-10 hover:border-[#60a5fa]/30 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10"
-              aria-label="Shop T-Shirts"
-            >
-              <div className="absolute top-0 right-0 h-64 w-64 -translate-y-16 translate-x-16 rounded-full bg-blue-500/5 blur-3xl" />
-              <Shirt size={48} className="text-[#60a5fa] mb-6 opacity-80" />
+      {/* ═══════════════════════════════════════════════════════════
+          CATEGORY BANNERS — alternating flat blocks
+      ══════════════════════════════════════════════════════════════ */}
+      <section className="section-surface" aria-label="Shop by category">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+
+          {/* T-Shirts block */}
+          <Link
+            to="/shop?category=tshirt"
+            className="group relative overflow-hidden flex flex-col justify-end p-12 min-h-[320px] transition-all duration-300"
+            style={{ backgroundColor: "var(--bg-nav)" }}
+            aria-label="Shop T-Shirts"
+          >
+            {/* Diamond decorations inside block */}
+            <Diamond size="200px" top="-50px"  right="-50px" variant="outline" opacity={0.12} animClass="diamond-float-3" />
+            <Diamond size="100px" top="40px"   right="80px"  variant="blue"    opacity={0.2}  animClass="diamond-float-1" />
+            <Diamond size="50px"  bottom="80px" right="180px" variant="filled" opacity={0.15} animClass="diamond-float-2" />
+
+            {/* Hover accent bar */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-1 transition-all duration-300 group-hover:w-2"
+              style={{ backgroundColor: "var(--accent)" }}
+            />
+
+            <div className="relative z-10">
+              <Shirt size={40} className="mb-5 transition-transform duration-300 group-hover:-translate-y-1" style={{ color: "var(--accent)" }} />
               <h3
-                className="text-3xl font-bold text-white mb-2"
+                className="text-4xl font-bold text-white mb-2"
                 style={{ fontFamily: "Syne, sans-serif" }}
               >
                 T-Shirts
               </h3>
-              <p className="text-white/50 text-sm mb-6">Oversized, polo, vintage — 7 styles from ₹649</p>
-              <span className="inline-flex items-center gap-2 text-[#60a5fa] text-sm font-semibold group-hover:gap-3 transition-all">
+              <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.45)" }}>
+                7 styles from ₹649 — Oversized, polo &amp; vintage cuts
+              </p>
+              <span
+                className="inline-flex items-center gap-2 text-sm font-semibold group-hover:gap-3 transition-all"
+                style={{ color: "var(--accent)" }}
+              >
                 Shop T-Shirts <ArrowRight size={15} />
               </span>
-            </Link>
+            </div>
+          </Link>
 
-            {/* Bags Banner */}
-            <Link
-              to="/shop?category=bag"
-              className="group relative rounded-3xl overflow-hidden border border-white/5 bg-gradient-to-br from-[#1a2e1e] to-[#0d0d1a] p-10 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10"
-              aria-label="Shop Bags"
-            >
-              <div className="absolute top-0 right-0 h-64 w-64 -translate-y-16 translate-x-16 rounded-full bg-emerald-500/5 blur-3xl" />
-              <ShoppingBag size={48} className="text-emerald-400 mb-6 opacity-80" />
+          {/* Bags block */}
+          <Link
+            to="/shop?category=bag"
+            className="group relative overflow-hidden flex flex-col justify-end p-12 min-h-[320px] transition-all duration-300"
+            style={{ backgroundColor: "var(--bg-section-alt)" }}
+            aria-label="Shop Bags"
+          >
+            <Diamond size="200px" top="-50px"  left="-50px"  variant="outline" opacity={0.1}  animClass="diamond-float-4" />
+            <Diamond size="100px" top="40px"   left="80px"   variant="accent"  opacity={0.3}  animClass="diamond-float-2" />
+            <Diamond size="50px"  bottom="80px" left="180px" variant="filled"  opacity={0.12} animClass="diamond-float-1" />
+
+            <div
+              className="absolute right-0 top-0 bottom-0 w-1 transition-all duration-300 group-hover:w-2"
+              style={{ backgroundColor: "var(--accent-deep)" }}
+            />
+
+            <div className="relative z-10">
+              <ShoppingBag size={40} className="mb-5 transition-transform duration-300 group-hover:-translate-y-1" style={{ color: "var(--accent)" }} />
               <h3
-                className="text-3xl font-bold text-white mb-2"
-                style={{ fontFamily: "Syne, sans-serif" }}
+                className="text-4xl font-bold mb-2"
+                style={{ fontFamily: "Syne, sans-serif", color: "var(--text-primary)" }}
               >
                 Bags
               </h3>
-              <p className="text-white/50 text-sm mb-6">Totes, slings, backpacks — 7 styles from ₹899</p>
-              <span className="inline-flex items-center gap-2 text-emerald-400 text-sm font-semibold group-hover:gap-3 transition-all">
+              <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
+                7 styles from ₹899 — Totes, slings &amp; backpacks
+              </p>
+              <span
+                className="inline-flex items-center gap-2 text-sm font-semibold group-hover:gap-3 transition-all"
+                style={{ color: "var(--accent)" }}
+              >
                 Shop Bags <ArrowRight size={15} />
               </span>
-            </Link>
-          </div>
+            </div>
+          </Link>
         </div>
       </section>
 
-      {/* ─── NEWSLETTER ───────────────────────────────────────── */}
-      <section className="py-20 bg-[#0a0a16]" aria-label="Newsletter signup">
-        <div className="mx-auto max-w-xl px-4 sm:px-6 text-center">
-          <div className="h-12 w-12 rounded-xl bg-[#60a5fa]/10 border border-[#60a5fa]/20 flex items-center justify-center mx-auto mb-6">
-            <Zap size={22} className="text-[#60a5fa]" />
+      {/* ═══════════════════════════════════════════════════════════
+          NEWSLETTER — distinct block with diamond pattern
+      ══════════════════════════════════════════════════════════════ */}
+      <section
+        className="relative py-20 overflow-hidden"
+        style={{ backgroundColor: "var(--bg-nav)" }}
+        aria-label="Newsletter signup"
+      >
+        {/* Diamond field */}
+        <Diamond size="280px" top="-70px"   left="-70px"   variant="outline" opacity={0.1}  animClass="diamond-float-4" />
+        <Diamond size="150px" bottom="-40px" right="-40px" variant="outline" opacity={0.1}  animClass="diamond-float-3" />
+        <Diamond size="70px"  top="30px"    right="25%"    variant="blue"    opacity={0.25} animClass="diamond-float-1" />
+        <Diamond size="40px"  bottom="30px" left="20%"     variant="blue"    opacity={0.2}  animClass="diamond-float-2" />
+
+        <div className="relative z-10 mx-auto max-w-xl px-4 sm:px-6 text-center">
+          <div
+            className="h-12 w-12 rounded-xl flex items-center justify-center mx-auto mb-6"
+            style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.2)" }}
+          >
+            <Zap size={22} style={{ color: "var(--accent)" }} />
           </div>
           <h2
             className="text-3xl sm:text-4xl font-bold text-white mb-3"
@@ -330,8 +416,8 @@ const HomePage = () => {
           >
             Stay in the Loop
           </h2>
-          <p className="text-white/50 mb-8">
-            Get early access to new drops, exclusive discounts, and style inspiration. No spam, ever.
+          <p className="mb-8" style={{ color: "rgba(255,255,255,0.45)" }}>
+            Early access to drops, exclusive discounts, and style drops. No spam.
           </p>
 
           <form onSubmit={handleSubmit(onNewsletterSubmit)} noValidate>
@@ -341,9 +427,14 @@ const HomePage = () => {
                   type="email"
                   placeholder="your@email.com"
                   aria-label="Email address for newsletter"
-                  className={`w-full px-5 py-3.5 rounded-xl text-white placeholder-white/30 bg-white/5 border text-sm focus:outline-none focus:ring-2 focus:ring-[#60a5fa] transition-all ${
-                    errors.email ? "border-red-400" : "border-white/10"
+                  className={`w-full px-5 py-3.5 rounded-xl text-sm focus:outline-none transition-all ${
+                    errors.email ? "border-red-400" : ""
                   }`}
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: errors.email ? "1px solid #f87171" : "1px solid rgba(255,255,255,0.1)",
+                    color: "#f8f8f8",
+                  }}
                   {...register("email")}
                 />
                 {errors.email && (
@@ -352,21 +443,20 @@ const HomePage = () => {
                   </p>
                 )}
               </div>
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                size="md"
-                isLoading={isSubmitting}
-                className="shrink-0"
+                disabled={isSubmitting}
+                className="shrink-0 px-6 py-3.5 rounded-xl font-semibold text-sm text-white transition-colors disabled:opacity-50"
+                style={{ backgroundColor: "var(--accent-deep)" }}
                 aria-label="Subscribe to newsletter"
               >
-                Subscribe
-              </Button>
+                {isSubmitting ? "..." : "Subscribe"}
+              </button>
             </div>
           </form>
 
-          <p className="mt-4 text-xs text-white/25">
-            Join 10,000+ subscribers · Unsubscribe anytime
+          <p className="mt-4 text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+            10,000+ subscribers · Unsubscribe anytime
           </p>
         </div>
       </section>

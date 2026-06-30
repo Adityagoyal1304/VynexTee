@@ -1,6 +1,7 @@
 // src/pages/ShopPage.jsx
 import React from "react";
 import { useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import ProductGrid from "@/components/product/ProductGrid";
 import CategoryFilter from "@/components/product/CategoryFilter";
@@ -12,36 +13,37 @@ const ShopPage = () => {
   const { data: products = [], isLoading, isError, refetch } = useProducts(activeCategory);
 
   const pageTitle =
-    activeCategory === "tshirt"
-      ? "T-Shirts"
-      : activeCategory === "bag"
-      ? "Bags"
-      : "All Products";
+    activeCategory === "tshirt" ? "T-Shirts" :
+    activeCategory === "bag"    ? "Bags"      :
+    "All Products";
 
   return (
-    <div className="min-h-screen bg-[#0a0a16] pt-24 pb-20 animate-fadeIn">
+    <div className="min-h-screen pt-24 pb-20 animate-fadeIn" style={{ backgroundColor: "var(--bg-page)" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
+          <Link to="/" className="hover:text-white transition-colors">Home</Link>
+          <span>/</span>
+          <span style={{ color: "var(--accent)" }}>Shop</span>
+          {activeCategory && (
+            <>
+              <span>/</span>
+              <span style={{ color: "var(--accent)" }}>{pageTitle}</span>
+            </>
+          )}
+        </div>
+
         {/* Page Header */}
         <div className="mb-10">
-          <div className="flex items-center gap-2 text-xs text-white/40 mb-3 uppercase tracking-widest">
-            <span>Home</span>
-            <span>/</span>
-            <span className="text-[#60a5fa]">Shop</span>
-            {activeCategory && (
-              <>
-                <span>/</span>
-                <span className="text-[#60a5fa]">{pageTitle}</span>
-              </>
-            )}
-          </div>
           <h1
-            className="text-4xl sm:text-5xl font-bold text-white"
-            style={{ fontFamily: "Syne, sans-serif" }}
+            className="text-4xl sm:text-5xl font-bold"
+            style={{ fontFamily: "Syne, sans-serif", color: "var(--text-primary)" }}
           >
             {pageTitle}
           </h1>
           {!isLoading && (
-            <p className="text-white/40 mt-2 text-sm">
+            <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
               {products.length} product{products.length !== 1 ? "s" : ""} available
             </p>
           )}
@@ -52,10 +54,9 @@ const ShopPage = () => {
           <CategoryFilter productCount={products.length} />
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-white/5 mb-8" />
+        <div className="h-px mb-8" style={{ backgroundColor: "var(--border-light)" }} />
 
-        {/* Product Grid */}
+        {/* Grid */}
         <ProductGrid
           products={products}
           isLoading={isLoading}
