@@ -8,102 +8,110 @@
 /* ── DARK MODE (default) ──────────────────────────────────── */
 :root,
 [data-theme="dark"] {
-  --bg-page:       #0a0a16;
-  --bg-section:    #0d0d1a;
-  --bg-section-alt:#0f1020;
-  --bg-card:       #111827;
-  --bg-nav:        #060610;       /* navbar — distinctly darker */
+  --bg-page:       #0d1b2e;       /* dark navy page */
+  --bg-section:    #112240;       /* slightly lighter navy */
+  --bg-section-alt:#0f1e38;
+  --bg-card:       #162d4a;       /* card surface — distinct navy blue */
+  --bg-nav:        #070e1a;       /* navbar — darkest anchor */
 
-  --border:        #1e293b;
-  --border-light:  rgba(255,255,255,0.06);
+  --border:        #1e3a58;
+  --border-light:  rgba(96,165,250,0.10);
 
-  --text-primary:  #f8f8f8;
-  --text-secondary:#94a3b8;
-  --text-muted:    #475569;
+  --text-primary:  #e8f0fe;
+  --text-secondary:#93b4d4;
+  --text-muted:    #4e7a9e;
 
   --accent:        #60a5fa;
   --accent-deep:   #3b82f6;
-  --accent-glow:   rgba(96,165,250,0.12);
+  --accent-glow:   rgba(96,165,250,0.15);
 
   /* diamond decorations */
-  --diamond-fill:  #111827;
-  --diamond-border:#1e293b;
-  --diamond-accent:rgba(96,165,250,0.08);
+  --diamond-fill:  #162d4a;
+  --diamond-border:#1e3a58;
+  --diamond-accent:rgba(96,165,250,0.10);
 
   /* hero / dark-section surfaces */
-  --bg-hero:            #060610;
-  --hero-text:          #f8f8f8;
-  --hero-text-sub:      rgba(255,255,255,0.50);
-  --hero-text-stat:     rgba(255,255,255,0.35);
-  --hero-divider:       rgba(255,255,255,0.07);
-  --hero-outline-btn:   rgba(255,255,255,0.15);
-  --hero-tag-bg:        rgba(96,165,250,0.10);
-  --hero-tag-border:    rgba(96,165,250,0.25);
-  --hero-card-label:    rgba(255,255,255,0.45);
-  --hero-card-info-bg:  #111827;
-  --hero-card-text:     #f8f8f8;
-  --hero-overlay-border:rgba(255,255,255,0.08);
+  --bg-hero:            #1a3050;
+  --bg-hero-gradient:   linear-gradient(135deg, #1e3a6e 0%, #112240 50%, #0a1628 100%);
+  --bg-hero-radial:     radial-gradient(ellipse 80% 60% at 60% 30%, rgba(96,165,250,0.14) 0%, transparent 70%);
+  --hero-text:          #e8f0fe;
+  --hero-text-sub:      rgba(232,240,254,0.60);
+  --hero-text-stat:     rgba(232,240,254,0.40);
+  --hero-divider:       rgba(96,165,250,0.12);
+  --hero-outline-btn:   rgba(96,165,250,0.25);
+  --hero-tag-bg:        rgba(96,165,250,0.12);
+  --hero-tag-border:    rgba(96,165,250,0.30);
+  --hero-card-label:    rgba(232,240,254,0.50);
+  --hero-card-info-bg:  #162d4a;
+  --hero-card-text:     #e8f0fe;
+  --hero-overlay-border:rgba(96,165,250,0.12);
 
   /* dark banner (newsletter / t-shirt block) */
-  --bg-dark-block:      #060610;
-  --dark-block-text:    rgba(255,255,255,0.45);
-  --dark-block-overlay: rgba(255,255,255,0.10);
-  --newsletter-input-bg:rgba(255,255,255,0.05);
-  --newsletter-input-border:rgba(255,255,255,0.10);
-  --newsletter-input-color:#f8f8f8;
-  --newsletter-fine:    rgba(255,255,255,0.20);
+  --bg-dark-block:      #0f1e38;
+  --bg-dark-block-gradient: linear-gradient(135deg, #1a3560 0%, #0d1a30 100%);
+  --dark-block-text:    rgba(232,240,254,0.55);
+  --dark-block-overlay: rgba(96,165,250,0.08);
+  --newsletter-input-bg:rgba(96,165,250,0.06);
+  --newsletter-input-border:rgba(96,165,250,0.18);
+  --newsletter-input-color:#e8f0fe;
+  --newsletter-fine:    rgba(232,240,254,0.25);
+
   --newsletter-icon-bg: rgba(96,165,250,0.10);
   --newsletter-icon-border:rgba(96,165,250,0.20);
 }
 
 /* ── LIGHT MODE ───────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-page:       #f0f4ff;
-  --bg-section:    #ffffff;
-  --bg-section-alt:#e8eef8;
-  --bg-card:       #ffffff;
-  --bg-nav:        #0d0d1a;       /* navbar stays dark always */
+  --bg-page:       #eef5ff;       /* light airy blue-white */
+  --bg-section:    #f5f9ff;       /* near-white section */
+  --bg-section-alt:#e3eef8;       /* slightly tinted alt */
+  --bg-card:       #ffffff;       /* pure white cards */
+  --bg-nav:        #070e1a;       /* navbar stays dark always */
 
-  --border:        #c7d2fe;
-  --border-light:  rgba(37,99,235,0.10);
+  --border:        #93bde0;
+  --border-light:  rgba(37,99,235,0.14);
 
-  --text-primary:  #0d0d1a;
-  --text-secondary:#334155;
-  --text-muted:    #64748b;
+  --text-primary:  #0d1b2e;       /* mirrors dark mode's bg-page for symmetry */
+  --text-secondary:#1e3a5f;
+  --text-muted:    #4a6fa5;
 
-  --accent:        #2563eb;
-  --accent-deep:   #1d4ed8;
-  --accent-glow:   rgba(37,99,235,0.10);
+  --accent:        #1d4ed8;
+  --accent-deep:   #1e40af;
+  --accent-glow:   rgba(29,78,216,0.12);
 
-  --diamond-fill:  #c7d2fe;
-  --diamond-border:#818cf8;
-  --diamond-accent:rgba(37,99,235,0.08);
+  --diamond-fill:  #93bde0;
+  --diamond-border:#5a8fc4;
+  --diamond-accent:rgba(29,78,216,0.10);
 
-  /* hero / dark-section surfaces — light mode uses a vibrant indigo-blue */
-  --bg-hero:            #dbeafe;
-  --hero-text:          #0d0d1a;
-  --hero-text-sub:      rgba(13,13,26,0.55);
-  --hero-text-stat:     rgba(13,13,26,0.40);
-  --hero-divider:       rgba(13,13,26,0.10);
-  --hero-outline-btn:   rgba(37,99,235,0.30);
-  --hero-tag-bg:        rgba(37,99,235,0.10);
-  --hero-tag-border:    rgba(37,99,235,0.30);
-  --hero-card-label:    rgba(13,13,26,0.50);
-  --hero-card-info-bg:  #eff6ff;
-  --hero-card-text:     #0d0d1a;
-  --hero-overlay-border:rgba(37,99,235,0.15);
+  /* hero - lighter steel gradient */
+  --bg-hero:            #5a9de0;
+  --bg-hero-gradient:   linear-gradient(135deg, #3a78c9 0%, #5a9de0 45%, #90c2f0 100%);
+  --bg-hero-radial:     radial-gradient(ellipse 70% 50% at 65% 35%, rgba(255,255,255,0.28) 0%, transparent 65%);
+  --hero-text:          #ffffff;
+  --hero-text-sub:      rgba(255,255,255,0.75);
+  --hero-text-stat:     rgba(255,255,255,0.55);
+  --hero-divider:       rgba(255,255,255,0.18);
+  --hero-outline-btn:   rgba(255,255,255,0.35);
+  --hero-tag-bg:        rgba(255,255,255,0.15);
+  --hero-tag-border:    rgba(255,255,255,0.35);
+  --hero-card-label:    rgba(255,255,255,0.65);
+  --hero-card-info-bg:  #3a78c9;
+  --hero-card-text:     #ffffff;
+  --hero-overlay-border:rgba(255,255,255,0.22);
 
-  /* category / newsletter sections */
-  --bg-dark-block:      #eff6ff;
-  --dark-block-text:    rgba(13,13,26,0.55);
-  --dark-block-overlay: rgba(37,99,235,0.08);
-  --newsletter-input-bg:rgba(37,99,235,0.05);
-  --newsletter-input-border:rgba(37,99,235,0.20);
-  --newsletter-input-color:#0d0d1a;
-  --newsletter-fine:    rgba(13,13,26,0.30);
-  --newsletter-icon-bg: rgba(37,99,235,0.10);
-  --newsletter-icon-border:rgba(37,99,235,0.25);
+  /* category / newsletter blocks */
+  --bg-dark-block:      #4a8dd4;
+  --bg-dark-block-gradient: linear-gradient(135deg, #3a78c9 0%, #62a4e8 100%);
+  --dark-block-text:    rgba(255,255,255,0.75);
+  --dark-block-overlay: rgba(255,255,255,0.08);
+  --newsletter-input-bg:rgba(255,255,255,0.12);
+  --newsletter-input-border:rgba(255,255,255,0.30);
+  --newsletter-input-color:#ffffff;
+  --newsletter-fine:    rgba(255,255,255,0.45);
+  --newsletter-icon-bg: rgba(255,255,255,0.15);
+  --newsletter-icon-border:rgba(255,255,255,0.35);
 }
+
 
 /* ═══════════════════════════════════════════════════════════
    BASE RESET
