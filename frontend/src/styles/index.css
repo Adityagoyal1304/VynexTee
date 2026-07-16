@@ -29,30 +29,80 @@
   --diamond-fill:  #111827;
   --diamond-border:#1e293b;
   --diamond-accent:rgba(96,165,250,0.08);
+
+  /* hero / dark-section surfaces */
+  --bg-hero:            #060610;
+  --hero-text:          #f8f8f8;
+  --hero-text-sub:      rgba(255,255,255,0.50);
+  --hero-text-stat:     rgba(255,255,255,0.35);
+  --hero-divider:       rgba(255,255,255,0.07);
+  --hero-outline-btn:   rgba(255,255,255,0.15);
+  --hero-tag-bg:        rgba(96,165,250,0.10);
+  --hero-tag-border:    rgba(96,165,250,0.25);
+  --hero-card-label:    rgba(255,255,255,0.45);
+  --hero-card-info-bg:  #111827;
+  --hero-card-text:     #f8f8f8;
+  --hero-overlay-border:rgba(255,255,255,0.08);
+
+  /* dark banner (newsletter / t-shirt block) */
+  --bg-dark-block:      #060610;
+  --dark-block-text:    rgba(255,255,255,0.45);
+  --dark-block-overlay: rgba(255,255,255,0.10);
+  --newsletter-input-bg:rgba(255,255,255,0.05);
+  --newsletter-input-border:rgba(255,255,255,0.10);
+  --newsletter-input-color:#f8f8f8;
+  --newsletter-fine:    rgba(255,255,255,0.20);
+  --newsletter-icon-bg: rgba(96,165,250,0.10);
+  --newsletter-icon-border:rgba(96,165,250,0.20);
 }
 
 /* ── LIGHT MODE ───────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-page:       #f4f4f8;
+  --bg-page:       #f0f4ff;
   --bg-section:    #ffffff;
-  --bg-section-alt:#eef0f7;
+  --bg-section-alt:#e8eef8;
   --bg-card:       #ffffff;
   --bg-nav:        #0d0d1a;       /* navbar stays dark always */
 
-  --border:        #e2e8f0;
-  --border-light:  rgba(0,0,0,0.06);
+  --border:        #c7d2fe;
+  --border-light:  rgba(37,99,235,0.10);
 
   --text-primary:  #0d0d1a;
-  --text-secondary:#475569;
-  --text-muted:    #94a3b8;
+  --text-secondary:#334155;
+  --text-muted:    #64748b;
 
   --accent:        #2563eb;
   --accent-deep:   #1d4ed8;
-  --accent-glow:   rgba(37,99,235,0.08);
+  --accent-glow:   rgba(37,99,235,0.10);
 
-  --diamond-fill:  #e8eaf6;
-  --diamond-border:#c7d2fe;
-  --diamond-accent:rgba(37,99,235,0.06);
+  --diamond-fill:  #c7d2fe;
+  --diamond-border:#818cf8;
+  --diamond-accent:rgba(37,99,235,0.08);
+
+  /* hero / dark-section surfaces — light mode uses a vibrant indigo-blue */
+  --bg-hero:            #dbeafe;
+  --hero-text:          #0d0d1a;
+  --hero-text-sub:      rgba(13,13,26,0.55);
+  --hero-text-stat:     rgba(13,13,26,0.40);
+  --hero-divider:       rgba(13,13,26,0.10);
+  --hero-outline-btn:   rgba(37,99,235,0.30);
+  --hero-tag-bg:        rgba(37,99,235,0.10);
+  --hero-tag-border:    rgba(37,99,235,0.30);
+  --hero-card-label:    rgba(13,13,26,0.50);
+  --hero-card-info-bg:  #eff6ff;
+  --hero-card-text:     #0d0d1a;
+  --hero-overlay-border:rgba(37,99,235,0.15);
+
+  /* category / newsletter sections */
+  --bg-dark-block:      #eff6ff;
+  --dark-block-text:    rgba(13,13,26,0.55);
+  --dark-block-overlay: rgba(37,99,235,0.08);
+  --newsletter-input-bg:rgba(37,99,235,0.05);
+  --newsletter-input-border:rgba(37,99,235,0.20);
+  --newsletter-input-color:#0d0d1a;
+  --newsletter-fine:    rgba(13,13,26,0.30);
+  --newsletter-icon-bg: rgba(37,99,235,0.10);
+  --newsletter-icon-border:rgba(37,99,235,0.25);
 }
 
 /* ═══════════════════════════════════════════════════════════

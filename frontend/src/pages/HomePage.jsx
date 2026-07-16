@@ -70,7 +70,7 @@ const HomePage = () => {
       ══════════════════════════════════════════════════════════════ */}
       <section
         className="relative min-h-screen flex items-center overflow-hidden"
-        style={{ backgroundColor: "var(--bg-nav)" }}
+        style={{ backgroundColor: "var(--bg-hero)" }}
         aria-label="Hero"
       >
         {/* ── Diamond decorations ── */}
@@ -91,8 +91,8 @@ const HomePage = () => {
               <div
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase mb-8"
                 style={{
-                  background: "rgba(96,165,250,0.1)",
-                  border: "1px solid rgba(96,165,250,0.25)",
+                  background: "var(--hero-tag-bg)",
+                  border: "1px solid var(--hero-tag-border)",
                   color: "var(--accent)",
                 }}
               >
@@ -101,8 +101,8 @@ const HomePage = () => {
               </div>
 
               <h1
-                className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] text-white mb-6"
-                style={{ fontFamily: "Syne, sans-serif" }}
+                className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6"
+                style={{ fontFamily: "Syne, sans-serif", color: "var(--hero-text)" }}
               >
                 Wear the{" "}
                 <span style={{ color: "var(--accent)" }}>Bold.</span>
@@ -111,7 +111,7 @@ const HomePage = () => {
                 <span style={{ color: "var(--accent)" }}>Statement.</span>
               </h1>
 
-              <p className="text-lg leading-relaxed max-w-md mb-10" style={{ color: "rgba(255,255,255,0.5)" }}>
+              <p className="text-lg leading-relaxed max-w-md mb-10" style={{ color: "var(--hero-text-sub)" }}>
                 Premium oversized tees and designer bags crafted for the ones who don't blend in.
                 Free shipping on orders above ₹999.
               </p>
@@ -129,8 +129,8 @@ const HomePage = () => {
                 </Link>
                 <Link
                   to="/shop?category=bag"
-                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl font-semibold text-base text-white/80 transition-all duration-200 hover:text-white focus:outline-none"
-                  style={{ border: "2px solid rgba(255,255,255,0.15)" }}
+                  className="inline-flex items-center gap-3 px-7 py-4 rounded-xl font-semibold text-base transition-all duration-200 focus:outline-none"
+                  style={{ border: "2px solid var(--hero-outline-btn)", color: "var(--hero-text)" }}
                   aria-label="Shop Bags"
                 >
                   <ShoppingBag size={18} />
@@ -139,15 +139,15 @@ const HomePage = () => {
               </div>
 
               {/* Stats */}
-              <div className="mt-14 flex gap-10 pt-8" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="mt-14 flex gap-10 pt-8" style={{ borderTop: "1px solid var(--hero-divider)" }}>
                 {[
                   { val: "10K+", label: "Happy Customers" },
                   { val: "50+",  label: "Unique Designs" },
                   { val: "4.9★", label: "Avg Rating" },
                 ].map(({ val, label }) => (
                   <div key={label}>
-                    <p className="text-2xl font-bold text-white" style={{ fontFamily: "Syne, sans-serif" }}>{val}</p>
-                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{label}</p>
+                    <p className="text-2xl font-bold" style={{ fontFamily: "Syne, sans-serif", color: "var(--hero-text)" }}>{val}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--hero-text-stat)" }}>{label}</p>
                   </div>
                 ))}
               </div>
@@ -156,17 +156,17 @@ const HomePage = () => {
             {/* Right — product showcase blocks (no gradients, flat colored) */}
             <div className="hidden lg:grid grid-cols-2 gap-4 relative">
               {[
-                { bg: "#93C5FD", label: "Icy Blue Tee",        price: "₹899",   Icon: Shirt },
-                { bg: "#0D0D1A", label: "Signature Tote",       price: "₹1,699", Icon: ShoppingBag },
-                { bg: "#F5F5F5", label: "Classic White Tee",    price: "₹699",   Icon: Shirt },
-                { bg: "#D4C5A9", label: "Urban Canvas Tote",    price: "₹1,199", Icon: ShoppingBag },
-              ].map(({ bg, label, price, Icon }, i) => (
+                { bg: "#93C5FD", label: "Icy Blue Tee",        price: "₹899",   Icon: Shirt,        dark: false },
+                { bg: "#1e3a5f", label: "Signature Tote",       price: "₹1,699", Icon: ShoppingBag,  dark: true  },
+                { bg: "#bfdbfe", label: "Classic White Tee",    price: "₹699",   Icon: Shirt,        dark: false },
+                { bg: "#d4a574", label: "Urban Canvas Tote",    price: "₹1,199", Icon: ShoppingBag,  dark: false },
+              ].map(({ bg, label, price, Icon, dark }, i) => (
                 <div
                   key={label}
                   className="rounded-2xl overflow-hidden"
                   style={{
                     marginTop: i % 2 !== 0 ? "2rem" : "0",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: "1px solid var(--hero-overlay-border)",
                     transform: "translateZ(0)",
                   }}
                 >
@@ -186,12 +186,12 @@ const HomePage = () => {
                     />
                     <Icon
                       size={52}
-                      style={{ color: bg === "#F5F5F5" || bg === "#D4C5A9" ? "rgba(0,0,0,0.25)" : "rgba(255,255,255,0.3)" }}
+                      style={{ color: dark ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.22)" }}
                     />
                   </div>
-                  <div className="p-3" style={{ backgroundColor: "#111827" }}>
-                    <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{label}</p>
-                    <p className="text-sm font-bold text-white mt-0.5">{price}</p>
+                  <div className="p-3" style={{ backgroundColor: "var(--hero-card-info-bg)" }}>
+                    <p className="text-xs" style={{ color: "var(--hero-card-label)" }}>{label}</p>
+                    <p className="text-sm font-bold mt-0.5" style={{ color: "var(--hero-card-text)" }}>{price}</p>
                   </div>
                 </div>
               ))}
@@ -317,7 +317,7 @@ const HomePage = () => {
           <Link
             to="/shop?category=tshirt"
             className="group relative overflow-hidden flex flex-col justify-end p-12 min-h-[320px] transition-all duration-300"
-            style={{ backgroundColor: "var(--bg-nav)" }}
+            style={{ backgroundColor: "var(--bg-dark-block)" }}
             aria-label="Shop T-Shirts"
           >
             {/* Diamond decorations inside block */}
@@ -334,12 +334,12 @@ const HomePage = () => {
             <div className="relative z-10">
               <Shirt size={40} className="mb-5 transition-transform duration-300 group-hover:-translate-y-1" style={{ color: "var(--accent)" }} />
               <h3
-                className="text-4xl font-bold text-white mb-2"
-                style={{ fontFamily: "Syne, sans-serif" }}
+                className="text-4xl font-bold mb-2"
+                style={{ fontFamily: "Syne, sans-serif", color: "var(--hero-text)" }}
               >
                 T-Shirts
               </h3>
-              <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.45)" }}>
+              <p className="text-sm mb-5" style={{ color: "var(--dark-block-text)" }}>
                 7 styles from ₹649 — Oversized, polo &amp; vintage cuts
               </p>
               <span
@@ -394,7 +394,7 @@ const HomePage = () => {
       ══════════════════════════════════════════════════════════════ */}
       <section
         className="relative py-20 overflow-hidden"
-        style={{ backgroundColor: "var(--bg-nav)" }}
+        style={{ backgroundColor: "var(--bg-dark-block)" }}
         aria-label="Newsletter signup"
       >
         {/* Diamond field */}
@@ -406,17 +406,17 @@ const HomePage = () => {
         <div className="relative z-10 mx-auto max-w-xl px-4 sm:px-6 text-center">
           <div
             className="h-12 w-12 rounded-xl flex items-center justify-center mx-auto mb-6"
-            style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.2)" }}
+            style={{ background: "var(--newsletter-icon-bg)", border: "1px solid var(--newsletter-icon-border)" }}
           >
             <Zap size={22} style={{ color: "var(--accent)" }} />
           </div>
           <h2
-            className="text-3xl sm:text-4xl font-bold text-white mb-3"
-            style={{ fontFamily: "Syne, sans-serif" }}
+            className="text-3xl sm:text-4xl font-bold mb-3"
+            style={{ fontFamily: "Syne, sans-serif", color: "var(--hero-text)" }}
           >
             Stay in the Loop
           </h2>
-          <p className="mb-8" style={{ color: "rgba(255,255,255,0.45)" }}>
+          <p className="mb-8" style={{ color: "var(--dark-block-text)" }}>
             Early access to drops, exclusive discounts, and style drops. No spam.
           </p>
 
@@ -431,9 +431,9 @@ const HomePage = () => {
                     errors.email ? "border-red-400" : ""
                   }`}
                   style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: errors.email ? "1px solid #f87171" : "1px solid rgba(255,255,255,0.1)",
-                    color: "#f8f8f8",
+                    background: "var(--newsletter-input-bg)",
+                    border: errors.email ? "1px solid #f87171" : "1px solid var(--newsletter-input-border)",
+                    color: "var(--newsletter-input-color)",
                   }}
                   {...register("email")}
                 />
@@ -455,7 +455,7 @@ const HomePage = () => {
             </div>
           </form>
 
-          <p className="mt-4 text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+          <p className="mt-4 text-xs" style={{ color: "var(--newsletter-fine)" }}>
             10,000+ subscribers · Unsubscribe anytime
           </p>
         </div>
