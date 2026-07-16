@@ -1,28 +1,39 @@
-// src/pages/ShopPage.jsx
 import React from "react";
-import { useSearchParams } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { useProducts } from "@/hooks/useProducts";
-import ProductGrid from "@/components/product/ProductGrid";
-import CategoryFilter from "@/components/product/CategoryFilter";
+import { Link, useSearchParams } from "react-router-dom";
+import { Package, Shirt, ShoppingBag } from "lucide-react";
+
+const CATEGORIES = [
+  { key: null,      label: "All"      },
+  { key: "tshirt",  label: "T-Shirts" },
+  { key: "bag",     label: "Bags"     },
+];
 
 const ShopPage = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const activeCategory = searchParams.get("category");
-
-  const { data: products = [], isLoading, isError, refetch } = useProducts(activeCategory);
 
   const pageTitle =
     activeCategory === "tshirt" ? "T-Shirts" :
     activeCategory === "bag"    ? "Bags"      :
     "All Products";
 
+  const setCategory = (key) => {
+    if (key) setSearchParams({ category: key });
+    else setSearchParams({});
+  };
+
   return (
-    <div className="min-h-screen pt-24 pb-20 animate-fadeIn" style={{ backgroundColor: "var(--bg-page)" }}>
+    <div
+      className="min-h-screen pt-24 pb-20 animate-fadeIn"
+      style={{ backgroundColor: "var(--bg-page)" }}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>
+        <div
+          className="flex items-center gap-2 text-xs uppercase tracking-widest mb-6"
+          style={{ color: "var(--text-muted)" }}
+        >
           <Link to="/" className="hover:text-white transition-colors">Home</Link>
           <span>/</span>
           <span style={{ color: "var(--accent)" }}>Shop</span>
@@ -34,7 +45,7 @@ const ShopPage = () => {
           )}
         </div>
 
-        {/* Page Header */}
+        {/* Header */}
         <div className="mb-10">
           <h1
             className="text-4xl sm:text-5xl font-bold"
@@ -42,27 +53,64 @@ const ShopPage = () => {
           >
             {pageTitle}
           </h1>
-          {!isLoading && (
-            <p className="mt-2 text-sm" style={{ color: "var(--text-muted)" }}>
-              {products.length} product{products.length !== 1 ? "s" : ""} available
-            </p>
-          )}
         </div>
 
-        {/* Filters */}
-        <div className="mb-8">
-          <CategoryFilter productCount={products.length} />
+        {/* Category tabs */}
+        <div className="flex gap-2 mb-10 flex-wrap">
+          {CATEGORIES.map(({ key, label }) => {
+            const active = activeCategory === key;
+            return (
+              <button
+                key={label}
+                onClick={() => setCategory(key)}
+                className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                style={
+                  active
+                    ? { backgroundColor: "var(--accent-deep)", color: "#fff" }
+                    : {
+                        backgroundColor: "var(--bg-card)",
+                        border: "1px solid var(--border-light)",
+                        color: "var(--text-secondary)",
+                      }
+                }
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="h-px mb-8" style={{ backgroundColor: "var(--border-light)" }} />
+        {/* Empty state */}
+        <div
+          className="flex flex-col items-center justify-center py-32 rounded-2xl"
+          style={{
+            backgroundColor: "var(--bg-card)",
+            border: "1px solid var(--border-light)",
+          }}
+        >
+          <div
+            className="h-16 w-16 rounded-2xl flex items-center justify-center mb-5"
+            style={{ backgroundColor: "var(--accent-glow)" }}
+          >
+            {activeCategory === "tshirt" ? (
+              <Shirt size={28} style={{ color: "var(--accent)" }} />
+            ) : activeCategory === "bag" ? (
+              <ShoppingBag size={28} style={{ color: "var(--accent)" }} />
+            ) : (
+              <Package size={28} style={{ color: "var(--accent)" }} />
+            )}
+          </div>
+          <h2
+            className="text-xl font-bold mb-2"
+            style={{ fontFamily: "Syne, sans-serif", color: "var(--text-primary)" }}
+          >
+            No products yet
+          </h2>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+            Products will appear here once they're added.
+          </p>
+        </div>
 
-        {/* Grid */}
-        <ProductGrid
-          products={products}
-          isLoading={isLoading}
-          isError={isError}
-          onRetry={refetch}
-        />
       </div>
     </div>
   );

@@ -3,15 +3,19 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ShoppingBag, Sun, Moon, Search, User, ChevronDown,
-  Shirt, LogIn, Settings, Heart, X, Package,
+  Shirt, Settings, Heart, X, Package,
 } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
 import { useTheme } from "@/context/ThemeContext";
 
 const Navbar = () => {
+  const { totalItems } = useCart();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const [scrolled,     setScrolled]     = useState(false);
+  const [prevItems,    setPrevItems]     = useState(0);
+  const [cartPop,      setCartPop]       = useState(false);
   const [searchQuery,  setSearchQuery]   = useState("");
   const [searchActive, setSearchActive]  = useState(false);
   const [storeOpen,    setStoreOpen]     = useState(false);
@@ -27,6 +31,15 @@ const Navbar = () => {
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  /* ── cart badge pop ── */
+  useEffect(() => {
+    if (totalItems > prevItems) {
+      setCartPop(true);
+      setTimeout(() => setCartPop(false), 350);
+    }
+    setPrevItems(totalItems);
+  }, [totalItems]);
 
   /* ── close dropdowns on outside click ── */
   useEffect(() => {
@@ -316,6 +329,26 @@ const Navbar = () => {
 
           {/* divider */}
           <div className="hidden md:block w-px h-6 mx-1" style={{ background: "rgba(255,255,255,0.10)" }} />
+
+          {/* ── 5. CART ── */}
+          <button
+            onClick={() => { navigate("/cart"); closeAll(); }}
+            className="relative p-2.5 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all duration-200"
+            aria-label={`Shopping cart, ${totalItems} item${totalItems !== 1 ? "s" : ""}`}
+          >
+            <ShoppingBag size={20} strokeWidth={1.8} />
+            {totalItems > 0 && (
+              <span
+                className={`absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center rounded-full text-white text-[9px] font-bold ${
+                  cartPop ? "badge-pop" : ""
+                }`}
+                style={{ backgroundColor: "var(--accent-deep)" }}
+                aria-live="polite"
+              >
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
+          </button>
 
           {/* ── 6. THEME TOGGLE ── */}
           <button
