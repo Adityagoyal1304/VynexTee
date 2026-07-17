@@ -325,31 +325,43 @@ const Navbar = () => {
 
               {/* Menu items */}
               <div className="p-2">
-                {[
-                  { icon: Heart,    label: "Wishlist",       sub: "Your saved items" },
-                  { icon: Package,  label: "My Orders",      sub: "Track your orders" },
-                  { icon: Settings, label: "Settings",       sub: "Account preferences" },
-                ].map(({ icon: Icon, label, sub }) => (
-                  <button
-                    key={label}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5 text-left group/item"
-                  >
-                    <div
-                      className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ background: "rgba(96,165,250,0.10)" }}
+                {isAuthenticated && (
+                  <>
+                    <button
+                      onClick={() => { setProfileOpen(false); navigate("/profile"); }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5 text-left group/item"
                     >
-                      <Icon size={13} style={{ color: "var(--accent)" }} />
-                    </div>
-                    <div>
-                      <p className="font-medium text-white/80 group-hover/item:text-white transition-colors leading-none">
-                        {label}
-                      </p>
-                      <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>
-                        {sub}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                      <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(96,165,250,0.10)" }}>
+                        <User size={13} style={{ color: "var(--accent)" }} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-white/80 group-hover/item:text-white transition-colors leading-none">My Profile</p>
+                        <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>View account details</p>
+                      </div>
+                    </button>
+
+                    {user?.role === "admin" && (
+                      <button
+                        onClick={() => { setProfileOpen(false); navigate("/admin"); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5 text-left group/item mt-1"
+                      >
+                        <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(34,197,94,0.10)" }}>
+                          <Settings size={13} style={{ color: "#4ade80" }} />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white/80 group-hover/item:text-white transition-colors leading-none">Admin Dashboard</p>
+                          <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.30)" }}>Manage store products</p>
+                        </div>
+                      </button>
+                    )}
+                  </>
+                )}
+                
+                {!isAuthenticated && (
+                  <div className="px-3 py-2 text-xs text-center" style={{ color: "rgba(255,255,255,0.3)" }}>
+                    Please sign in to view menu
+                  </div>
+                )}
               </div>
             </div>
           </div>

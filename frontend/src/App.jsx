@@ -12,6 +12,9 @@ import CartPage from "@/pages/CartPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import LoginPage    from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ProfilePage  from "@/pages/ProfilePage";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +57,25 @@ const App = () => {
               <Route path="/cart"         element={<CartPage />} />
               <Route path="/login"        element={<LoginPage />} />
               <Route path="/register"     element={<RegisterPage />} />
+              
+              {/* Protected Routes */}
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminDashboardPage />
+                  </ProtectedRoute>
+                } 
+              />
+
               <Route path="*"             element={<NotFoundPage />} />
             </Route>
           </Routes>

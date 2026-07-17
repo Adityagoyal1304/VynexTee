@@ -13,6 +13,23 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// Intercept requests to attach token if user is logged in
+api.interceptors.request.use((config) => {
+  const authState = localStorage.getItem("vynex-auth");
+  if (authState) {
+    try {
+      const parsed = JSON.parse(authState);
+      const token = parsed?.state?.token;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (err) {
+      console.error("Could not parse auth token", err);
+    }
+  }
+  return config;
+});
+
 /**
  * Fetch all products, optionally filtered by category.
  * @param {string|null} category - "tshirt" | "bag" | null (all)
@@ -47,5 +64,47 @@ export const getProductById = async (id) => {
   return product;
 };
 
-const productService = { getProducts, getProductById };
+/**
+ * ADMIN ONLY: Create a product
+ */
+export const createProduct = async (productData) => {
+  const { data } = await api.post("/products", productData);
+  return data;
+};
+
+/**
+ * ADMIN ONLY: Update a product
+ */
+export const updateProduct = async (id, productData) => {
+  const { data } = await api.put(`/products/${id}`, productData);
+  return data;
+};
+
+/**
+ * ADMIN ONLY: Delete a product
+ */
+export const deleteProduct = async (id) => {
+  const { data } = await api.delete(`/products/${id}`);
+  return data;
+};
+
+/**
+ * ADMIN ONLY: Upload an image
+ * @param {File} file 
+ * @returns {Promise<{ message: string, url: string }>}
+ */
+export const uploadImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  
+  // Override the default application/json header for this specific request
+  const { data } = await api.post("/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return data;
+};
+
+const productService = { getProducts, getProductById, createProduct, updateProduct, deleteProduct, uploadImage };
 export default productService;

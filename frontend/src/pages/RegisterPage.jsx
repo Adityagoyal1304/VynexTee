@@ -1,6 +1,8 @@
 // src/pages/RegisterPage.jsx
 // Completely self-contained register page.
 // To remove: delete this file + its route in App.jsx. Nothing else breaks.
+// FIX: All inputs are inline JSX — no helper component defined inside the render
+// function (which would cause React to unmount/remount on every keystroke).
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -60,51 +62,11 @@ const RegisterPage = () => {
     }
   };
 
-  /* helper to render a field */
-  const Field = ({ id, label, type, icon: Icon, value, field, placeholder, show, onToggle, error }) => (
-    <div className="mb-4">
-      <label
-        htmlFor={id}
-        className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <Icon
-          size={15}
-          className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-          style={{ color: "var(--text-muted)" }}
-        />
-        <input
-          id={id}
-          type={type === "password" ? (show ? "text" : "password") : type}
-          placeholder={placeholder}
-          autoComplete={id}
-          value={value}
-          onChange={handleChange(field)}
-          className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl"
-          style={{
-            backgroundColor: "var(--bg-page)",
-            border: error ? "1px solid rgba(239,68,68,0.6)" : "1px solid var(--border)",
-            color: "var(--text-primary)",
-          }}
-        />
-        {type === "password" && (
-          <button
-            type="button"
-            onClick={onToggle}
-            className="absolute right-3.5 top-1/2 -translate-y-1/2"
-            style={{ color: "var(--text-muted)" }}
-            aria-label={show ? "Hide" : "Show"}
-          >
-            {show ? <EyeOff size={15} /> : <Eye size={15} />}
-          </button>
-        )}
-      </div>
-      {error && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{error}</p>}
-    </div>
-  );
+  const inputStyle = (hasError) => ({
+    backgroundColor: "var(--bg-page)",
+    border: hasError ? "1px solid rgba(239,68,68,0.6)" : "1px solid var(--border)",
+    color: "var(--text-primary)",
+  });
 
   /* ─── render ─────────────────────────────────────────────── */
   return (
@@ -162,57 +124,147 @@ const RegisterPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} noValidate>
-            <Field
-              id="register-name"
-              label="Full Name"
-              type="text"
-              icon={User}
-              value={form.name}
-              field="name"
-              placeholder="Aditya Goyal"
-              error={errors.name}
-            />
-            <Field
-              id="register-email"
-              label="Email"
-              type="email"
-              icon={Mail}
-              value={form.email}
-              field="email"
-              placeholder="you@example.com"
-              error={errors.email}
-            />
-            <Field
-              id="new-password"
-              label="Password"
-              type="password"
-              icon={Lock}
-              value={form.password}
-              field="password"
-              placeholder="Min. 6 characters"
-              show={showPw}
-              onToggle={() => setShowPw((v) => !v)}
-              error={errors.password}
-            />
-            <Field
-              id="confirm-password"
-              label="Confirm Password"
-              type="password"
-              icon={Lock}
-              value={form.confirmPassword}
-              field="confirmPassword"
-              placeholder="••••••••"
-              show={showCPw}
-              onToggle={() => setShowCPw((v) => !v)}
-              error={errors.confirmPassword}
-            />
+
+            {/* Full Name */}
+            <div className="mb-4">
+              <label
+                htmlFor="register-name"
+                className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Full Name
+              </label>
+              <div className="relative">
+                <User
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "var(--text-muted)" }}
+                />
+                <input
+                  id="register-name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="Aditya Goyal"
+                  value={form.name}
+                  onChange={handleChange("name")}
+                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl"
+                  style={inputStyle(errors.name)}
+                />
+              </div>
+              {errors.name && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{errors.name}</p>}
+            </div>
+
+            {/* Email */}
+            <div className="mb-4">
+              <label
+                htmlFor="register-email"
+                className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Email
+              </label>
+              <div className="relative">
+                <Mail
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "var(--text-muted)" }}
+                />
+                <input
+                  id="register-email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={handleChange("email")}
+                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl"
+                  style={inputStyle(errors.email)}
+                />
+              </div>
+              {errors.email && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{errors.email}</p>}
+            </div>
+
+            {/* Password */}
+            <div className="mb-4">
+              <label
+                htmlFor="new-password"
+                className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Password
+              </label>
+              <div className="relative">
+                <Lock
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "var(--text-muted)" }}
+                />
+                <input
+                  id="new-password"
+                  type={showPw ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="Min. 6 characters"
+                  value={form.password}
+                  onChange={handleChange("password")}
+                  className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl"
+                  style={inputStyle(errors.password)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((v) => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--text-muted)" }}
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                >
+                  {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+              {errors.password && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{errors.password}</p>}
+            </div>
+
+            {/* Confirm Password */}
+            <div className="mb-6">
+              <label
+                htmlFor="confirm-password"
+                className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <Lock
+                  size={15}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "var(--text-muted)" }}
+                />
+                <input
+                  id="confirm-password"
+                  type={showCPw ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="••••••••"
+                  value={form.confirmPassword}
+                  onChange={handleChange("confirmPassword")}
+                  className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl"
+                  style={inputStyle(errors.confirmPassword)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCPw((v) => !v)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2"
+                  style={{ color: "var(--text-muted)" }}
+                  aria-label={showCPw ? "Hide password" : "Show password"}
+                >
+                  {showCPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+              {errors.confirmPassword && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{errors.confirmPassword}</p>}
+            </div>
 
             {/* Submit */}
             <button
               id="register-submit"
               type="submit"
               disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200"
               style={{
                 backgroundColor: loading ? "rgba(59,130,246,0.5)" : "var(--accent-deep)",
                 cursor: loading ? "not-allowed" : "pointer",
