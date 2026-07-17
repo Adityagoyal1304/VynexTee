@@ -14,6 +14,13 @@ import useAuthStore from "@/store/authStore";
 const RegisterPage = () => {
   const navigate = useNavigate();
   const setAuth  = useAuthStore((s) => s.setAuth);
+  const user     = useAuthStore((s) => s.user);
+
+  React.useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [form, setForm] = useState({
     name: "", email: "", password: "", confirmPassword: "",

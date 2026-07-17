@@ -13,8 +13,15 @@ const LoginPage = () => {
   const navigate  = useNavigate();
   const location  = useLocation();
   const setAuth   = useAuthStore((s) => s.setAuth);
+  const user      = useAuthStore((s) => s.user);
 
   const from = location.state?.from?.pathname || "/";
+
+  React.useEffect(() => {
+    if (user) {
+      navigate(from, { replace: true });
+    }
+  }, [user, navigate, from]);
 
   const [form,    setForm]    = useState({ email: "", password: "" });
   const [showPw,  setShowPw]  = useState(false);
