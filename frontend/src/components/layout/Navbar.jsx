@@ -7,11 +7,13 @@ import {
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useTheme } from "@/context/ThemeContext";
+import useAuthStore from "@/store/authStore";
 
 const Navbar = () => {
   const { totalItems } = useCart();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   const [scrolled,     setScrolled]     = useState(false);
   const [prevItems,    setPrevItems]     = useState(0);
@@ -252,8 +254,12 @@ const Navbar = () => {
               <div
                 className="h-7 w-7 rounded-lg flex items-center justify-center"
                 style={{
-                  background: "linear-gradient(135deg, rgba(59,130,246,0.6), rgba(96,165,250,0.4))",
-                  border: "1px solid rgba(96,165,250,0.30)",
+                  background: isAuthenticated
+                    ? "linear-gradient(135deg, rgba(34,197,94,0.6), rgba(74,222,128,0.4))"
+                    : "linear-gradient(135deg, rgba(59,130,246,0.6), rgba(96,165,250,0.4))",
+                  border: isAuthenticated
+                    ? "1px solid rgba(74,222,128,0.40)"
+                    : "1px solid rgba(96,165,250,0.30)",
                 }}
               >
                 <User size={14} className="text-white" />
@@ -273,27 +279,48 @@ const Navbar = () => {
                   <div
                     className="h-11 w-11 rounded-xl flex items-center justify-center shrink-0"
                     style={{
-                      background: "linear-gradient(135deg, #3b82f6, #60a5fa)",
-                      boxShadow: "0 0 16px rgba(96,165,250,0.25)",
+                      background: isAuthenticated
+                        ? "linear-gradient(135deg, #22c55e, #4ade80)"
+                        : "linear-gradient(135deg, #3b82f6, #60a5fa)",
+                      boxShadow: isAuthenticated
+                        ? "0 0 16px rgba(74,222,128,0.25)"
+                        : "0 0 16px rgba(96,165,250,0.25)",
                     }}
                   >
                     <User size={20} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-white">Guest User</p>
+                    <p className="text-sm font-semibold text-white">
+                      {isAuthenticated ? user?.name : "Guest User"}
+                    </p>
                     <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.38)" }}>
-                      Not signed in
+                      {isAuthenticated ? user?.email : "Not signed in"}
                     </p>
                   </div>
                 </div>
 
-                {/* Sign in CTA */}
-                <button
-                  className="mt-3 w-full py-2 rounded-xl text-xs font-semibold text-white transition-all"
-                  style={{ backgroundColor: "var(--accent-deep)" }}
-                >
-                  Sign In / Register
-                </button>
+                {/* Auth CTA */}
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      setProfileOpen(false);
+                      navigate("/");
+                    }}
+                    className="mt-3 w-full py-2 rounded-xl text-xs font-semibold transition-all"
+                    style={{ backgroundColor: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.25)" }}
+                  >
+                    Sign Out
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setProfileOpen(false); navigate("/login"); }}
+                    className="mt-3 w-full py-2 rounded-xl text-xs font-semibold text-white transition-all"
+                    style={{ backgroundColor: "var(--accent-deep)" }}
+                  >
+                    Sign In / Register
+                  </button>
+                )}
               </div>
 
               {/* Menu items */}

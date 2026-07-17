@@ -10,6 +10,8 @@ import ShopPage from "@/pages/ShopPage";
 import ProductDetailPage from "@/pages/ProductDetailPage";
 import CartPage from "@/pages/CartPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+import LoginPage    from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,6 +52,8 @@ const App = () => {
               <Route path="/shop"         element={<ShopPage />} />
               <Route path="/product/:id"  element={<ProductDetailPage />} />
               <Route path="/cart"         element={<CartPage />} />
+              <Route path="/login"        element={<LoginPage />} />
+              <Route path="/register"     element={<RegisterPage />} />
               <Route path="*"             element={<NotFoundPage />} />
             </Route>
           </Routes>
