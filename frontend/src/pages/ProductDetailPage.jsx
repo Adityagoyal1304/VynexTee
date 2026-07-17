@@ -42,8 +42,8 @@ const ProductDetailPage = () => {
 
   // Fetch related products (same category)
   const { data: allProducts = [] } = useProducts(product?.category);
-  const related = allProducts
-    .filter((p) => p.id !== id)
+  const otherProducts = allProducts
+    .filter((p) => p._id !== id)
     .slice(0, 4);
 
   const handleAddToCart = () => {
@@ -267,7 +267,7 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Related Products */}
-            {related.length > 0 && (
+            {otherProducts.length > 0 && (
               <section className="mt-24" aria-label="Related products">
                 <div className="flex items-end justify-between mb-8">
                   <div>
@@ -289,8 +289,8 @@ const ProductDetailPage = () => {
                   </Link>
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                  {related.map((p) => (
-                    <ProductCard key={p.id} product={p} />
+                  {otherProducts.map((p) => (
+                    <ProductCard key={p._id} product={p} />
                   ))}
                 </div>
               </section>

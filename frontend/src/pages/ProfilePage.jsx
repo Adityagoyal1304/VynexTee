@@ -1,10 +1,36 @@
-// src/pages/ProfilePage.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import useAuthStore from "@/store/authStore";
-import { User, Mail, Package, ShieldCheck } from "lucide-react";
+import { User, Mail, Package, ShieldCheck, Clock } from "lucide-react";
+import { getMyOrders } from "@/services/orderService";
+import { formatPrice } from "@/utils/formatPrice";
 
 const ProfilePage = () => {
   const { user } = useAuthStore();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const data = await getMyOrders();
+        setOrders(data);
+      } catch (err) {
+        console.error("Failed to load orders", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "delivered": return { bg: "rgba(52,211,153,0.15)", text: "#34d399", border: "rgba(52,211,153,0.3)" };
+      case "shipped": return { bg: "rgba(96,165,250,0.15)", text: "#60a5fa", border: "rgba(96,165,250,0.3)" };
+      case "cancelled": return { bg: "rgba(248,113,113,0.15)", text: "#f87171", border: "rgba(248,113,113,0.3)" };
+      default: return { bg: "rgba(251,191,36,0.15)", text: "#fbbf24", border: "rgba(251,191,36,0.3)" };
+    }
+  };
 
   return (
     <div
@@ -72,18 +98,56 @@ const ProfilePage = () => {
               </h2>
             </div>
 
-            <div
-              className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed"
-              style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-page)" }}
-            >
-              <Package size={32} className="mb-4" style={{ color: "var(--text-muted)" }} />
-              <p className="text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
-                No orders yet
-              </p>
-              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                When you make a purchase, it will appear here.
-              </p>
-            </div>
+            {loading ? (
+              <div className="py-12 text-center text-sm" style={{ color: "var(--text-muted)" }}>Loading orders...</div>
+            ) : orders.length === 0 ? (
+              <div
+                className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed"
+                style={{ borderColor: "var(--border)", backgroundColor: "var(--bg-page)" }}
+              >
+                <Package size={32} className="mb-4" style={{ color: "var(--text-muted)" }} />
+                <p className="text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
+                  No orders yet
+                </p>
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  When you make a purchase, it will appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {orders.map((order) => {
+                  const statusStyles = getStatusColor(order.status);
+                  return (
+                    <div key={order._id} className="p-4 rounded-xl" style={{ backgroundColor: "var(--bg-page)", border: "1px solid var(--border-light)" }}>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <div>
+                          <p className="text-xs font-medium mb-1" style={{ color: "var(--text-muted)" }}>Order #{order._id.substring(order._id.length - 8)}</p>
+                          <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+                            <Clock size={12} /> {new Date(order.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="font-bold" style={{ color: "var(--text-primary)" }}>{formatPrice(order.totalAmount)}</span>
+                          <span className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold rounded-md" style={{ backgroundColor: statusStyles.bg, color: statusStyles.text, border: `1px solid ${statusStyles.border}` }}>
+                            {order.status}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 overflow-x-auto pb-2">
+                        {order.items.map((item, idx) => (
+                          <div key={idx} className="flex-shrink-0 relative group">
+                            <img src={item.image || "https://via.placeholder.com/150"} alt={item.name} className="w-12 h-12 rounded-lg object-cover" style={{ border: "1px solid var(--border-light)" }} />
+                            <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white bg-black">
+                              {item.qty}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Account Settings / Info */}

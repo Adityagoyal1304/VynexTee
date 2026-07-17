@@ -59,7 +59,7 @@ export const getProductById = async (id) => {
   }
   // Mock mode
   await new Promise((r) => setTimeout(r, 300));
-  const product = mockProducts.find((p) => p.id === id);
+  const product = mockProducts.find((p) => p._id === id);
   if (!product) throw new Error(`Product ${id} not found`);
   return product;
 };

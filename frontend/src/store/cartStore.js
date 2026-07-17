@@ -13,11 +13,11 @@ const useCartStore = create(
 
       addToCart: (product) => {
         set((state) => {
-          const existing = state.items.find((i) => i.id === product.id);
+          const existing = state.items.find((i) => i._id === product._id);
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.id === product.id ? { ...i, qty: i.qty + 1 } : i
+                i._id === product._id ? { ...i, qty: i.qty + 1 } : i
               ),
             };
           }
@@ -25,7 +25,7 @@ const useCartStore = create(
             items: [
               ...state.items,
               {
-                id: product.id,
+                _id: product._id,
                 name: product.name,
                 price: product.price,
                 category: product.category,
@@ -39,7 +39,7 @@ const useCartStore = create(
 
       removeFromCart: (id) => {
         set((state) => ({
-          items: state.items.filter((i) => i.id !== id),
+          items: state.items.filter((i) => i._id !== id),
         }));
       },
 
@@ -47,7 +47,7 @@ const useCartStore = create(
         if (newQty < 1) return;
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === id ? { ...i, qty: newQty } : i
+            i._id === id ? { ...i, qty: newQty } : i
           ),
         }));
       },

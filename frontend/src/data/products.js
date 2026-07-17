@@ -4,7 +4,7 @@
 export const products = [
   // ─── T-SHIRTS ─────────────────────────────────────────────────
   {
-    id: "p001",
+    _id: "p001",
     name: "Classic White Oversized Tee",
     price: 699,
     category: "tshirt",
@@ -16,7 +16,7 @@ export const products = [
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
   },
   {
-    id: "p002",
+    _id: "p002",
     name: "Midnight Drop-Shoulder Tee",
     price: 749,
     category: "tshirt",
@@ -28,7 +28,7 @@ export const products = [
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
   },
   {
-    id: "p003",
+    _id: "p003",
     name: "Sage Washed Vintage Tee",
     price: 799,
     category: "tshirt",
@@ -40,7 +40,7 @@ export const products = [
     sizes: ["XS", "S", "M", "L", "XL"],
   },
   {
-    id: "p004",
+    _id: "p004",
     name: "Bone Striped Polo Tee",
     price: 849,
     category: "tshirt",
@@ -52,7 +52,7 @@ export const products = [
     sizes: ["S", "M", "L", "XL", "XXL"],
   },
   {
-    id: "p005",
+    _id: "p005",
     name: "Graphite Slub Cotton Tee",
     price: 649,
     category: "tshirt",
@@ -64,7 +64,7 @@ export const products = [
     sizes: ["XS", "S", "M", "L", "XL", "XXL"],
   },
   {
-    id: "p006",
+    _id: "p006",
     name: "Icy Blue Longline Tee",
     price: 899,
     category: "tshirt",
@@ -76,7 +76,7 @@ export const products = [
     sizes: ["S", "M", "L", "XL", "XXL"],
   },
   {
-    id: "p007",
+    _id: "p007",
     name: "Terracotta Split-Hem Tee",
     price: 749,
     category: "tshirt",
@@ -90,7 +90,7 @@ export const products = [
 
   // ─── BAGS ─────────────────────────────────────────────────────
   {
-    id: "p008",
+    _id: "p008",
     name: "Urban Canvas Tote",
     price: 1199,
     category: "bag",
@@ -102,7 +102,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p009",
+    _id: "p009",
     name: "Midnight Structured Sling",
     price: 1499,
     category: "bag",
@@ -114,7 +114,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p010",
+    _id: "p010",
     name: "Sage Woven Market Bag",
     price: 899,
     category: "bag",
@@ -126,7 +126,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p011",
+    _id: "p011",
     name: "Steel Commuter Backpack",
     price: 2499,
     category: "bag",
@@ -138,7 +138,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p012",
+    _id: "p012",
     name: "Bone Leather Belt Bag",
     price: 1799,
     category: "bag",
@@ -150,7 +150,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p013",
+    _id: "p013",
     name: "Graphite Drawstring Gym Bag",
     price: 999,
     category: "bag",
@@ -162,7 +162,7 @@ export const products = [
     sizes: ["One Size"],
   },
   {
-    id: "p014",
+    _id: "p014",
     name: "Vynex Signature Tote",
     price: 1699,
     category: "bag",

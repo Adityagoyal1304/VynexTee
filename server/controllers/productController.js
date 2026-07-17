@@ -44,7 +44,7 @@ const getProductById = async (req, res, next) => {
 // @access  Private/Admin
 const createProduct = async (req, res, next) => {
   try {
-    const { name, price, category, description, color, badge, images, sizes } = req.body;
+    const { name, price, category, description, color, badge, images, sizes, stock } = req.body;
 
     const product = new Product({
       name,
@@ -55,6 +55,7 @@ const createProduct = async (req, res, next) => {
       badge: badge || null,
       images: images || [],
       sizes: sizes || [],
+      stock: stock || 0,
     });
 
     const createdProduct = await product.save();
@@ -85,6 +86,7 @@ const updateProduct = async (req, res, next) => {
       product.badge = req.body.badge !== undefined ? req.body.badge : product.badge;
       product.images = req.body.images || product.images;
       product.sizes = req.body.sizes || product.sizes;
+      product.stock = req.body.stock !== undefined ? req.body.stock : product.stock;
 
       const updatedProduct = await product.save();
       res.json(updatedProduct);

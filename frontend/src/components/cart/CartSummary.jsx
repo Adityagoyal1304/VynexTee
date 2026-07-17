@@ -8,7 +8,7 @@ import { formatPrice } from "@/utils/formatPrice";
 
 const FREE_SHIPPING_THRESHOLD = 999;
 
-const CartSummary = () => {
+const CartSummary = ({ onProceed, isCheckout, submitting }) => {
   const { totalPrice, totalItems } = useCart();
   const navigate = useNavigate();
 
@@ -17,11 +17,19 @@ const CartSummary = () => {
   const remaining = FREE_SHIPPING_THRESHOLD - totalPrice;
 
   const handleCheckout = () => {
-    toast("Checkout coming soon! Backend integration in progress. 🚀", {
-      icon: "🛒",
-      duration: 4000,
-      style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b", maxWidth: "380px" },
-    });
+    if (isCheckout) {
+      // Trigger form submission from outside (using form attribute)
+    } else {
+      const authState = localStorage.getItem("vynex-auth");
+      let token = null;
+      try { token = JSON.parse(authState)?.state?.token; } catch (e) {}
+      
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      onProceed();
+    }
   };
 
   return (
@@ -88,15 +96,27 @@ const CartSummary = () => {
       </div>
 
       {/* Checkout Button */}
-      <button
-        className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-white font-bold text-base transition-colors focus:outline-none"
-        style={{ backgroundColor: "var(--accent-deep)" }}
-        onClick={handleCheckout}
-        aria-label="Proceed to checkout"
-      >
-        <Lock size={15} />
-        Proceed to Checkout
-      </button>
+      {isCheckout ? (
+        <button
+          type="submit"
+          form="checkout-form"
+          disabled={submitting}
+          className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-white font-bold text-base transition-colors focus:outline-none disabled:opacity-50"
+          style={{ backgroundColor: "var(--accent-deep)" }}
+        >
+          {submitting ? "Processing..." : "Place Order"}
+        </button>
+      ) : (
+        <button
+          className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-white font-bold text-base transition-colors focus:outline-none"
+          style={{ backgroundColor: "var(--accent-deep)" }}
+          onClick={handleCheckout}
+          aria-label="Proceed to checkout"
+        >
+          <Lock size={15} />
+          Proceed to Checkout
+        </button>
+      )}
 
       <div className="mt-4 flex items-center justify-center gap-2 text-xs" style={{ color: "var(--text-muted)" }}>
         <Lock size={11} />

@@ -101,7 +101,7 @@ const ProductGrid = ({ products = [], isLoading = false, isError = false, onRetr
       aria-live="polite"
     >
       {sorted.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product._id} product={product} />
       ))}
     </div>
   );
