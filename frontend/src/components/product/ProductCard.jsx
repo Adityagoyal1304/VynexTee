@@ -27,18 +27,25 @@ const ProductImagePlaceholder = ({ color, name }) => (
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
-  const { id, name, price, category, badge, images, color } = product;
+  const { _id, id, name, price, category, badge, images, color } = product;
+  const productId = _id || id; // support both MongoDB (_id) and local mock (id)
   const hasRealImage =
-    images?.[0] && !images[0].includes("placeholder") && images[0].startsWith("/");
+    images?.[0] && !images[0].includes("placeholder");
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product);
-    toast.success(`${name} added to cart!`, {
-      style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
-      iconTheme: { primary: "#60a5fa", secondary: "#0a0a16" },
-    });
+    const result = addToCart(product);
+    if (result?.success === false) {
+      toast.error(result.message, {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+      });
+    } else {
+      toast.success(`${name} added to cart!`, {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+        iconTheme: { primary: "#60a5fa", secondary: "#0a0a16" },
+      });
+    }
   };
 
   return (
@@ -46,7 +53,7 @@ const ProductCard = ({ product }) => {
       className="group product-card rounded-2xl overflow-hidden"
       style={{ backgroundColor: "var(--bg-card)" }}
     >
-      <Link to={`/product/${id}`} className="block" aria-label={`View ${name}`}>
+      <Link to={`/product/${productId}`} className="block" aria-label={`View ${name}`}>
         {/* Image Area */}
         <div className="relative aspect-square overflow-hidden" style={{ backgroundColor: "var(--bg-section-alt)" }}>
           {hasRealImage ? (

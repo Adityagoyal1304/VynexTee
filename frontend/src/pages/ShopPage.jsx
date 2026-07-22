@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Package, Shirt, ShoppingBag, ArrowRight } from "lucide-react";
 import { getProducts } from "@/services/productService";
+import { formatPrice } from "@/utils/formatPrice";
 
 const CATEGORIES = [
   { key: null,      label: "All"      },
@@ -171,7 +172,7 @@ const ShopPage = () => {
                       {product.name}
                     </h3>
                     <p className="font-semibold text-lg shrink-0" style={{ color: "var(--text-secondary)" }}>
-                      ${product.price}
+                      {formatPrice(product.price)}
                     </p>
                   </div>
                   <p className="text-sm capitalize mt-auto" style={{ color: "var(--text-muted)" }}>

@@ -1,7 +1,7 @@
 // src/pages/ProductDetailPage.jsx
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, Minus, Plus, ArrowLeft, Package, RefreshCw, Truck, ChevronRight } from "lucide-react";
+import { ShoppingBag, Minus, Plus, ArrowLeft, Package, RefreshCw, Truck, ChevronRight, ChevronLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { useProduct, useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/hooks/useCart";
@@ -39,29 +39,86 @@ const ProductDetailPage = () => {
   const { data: product, isLoading, isError } = useProduct(id);
   const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedImg, setSelectedImg] = useState(0);
 
-  // Fetch related products (same category)
-  const { data: allProducts = [] } = useProducts(product?.category);
-  const otherProducts = allProducts
-    .filter((p) => p._id !== id)
-    .slice(0, 4);
+  // Touch swipe tracking
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
+
+  const images = product?.images?.length ? product.images : [];
+  const totalImgs = images.length;
+
+  const prevImg = () => setSelectedImg((i) => (i - 1 + totalImgs) % totalImgs);
+  const nextImg = () => setSelectedImg((i) => (i + 1) % totalImgs);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+    // Only treat as horizontal swipe if dx is dominant
+    if (Math.abs(dx) > 40 && Math.abs(dx) > dy) {
+      dx < 0 ? nextImg() : prevImg();
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
+  // Fetch ALL products (no category filter) for "You might also like".
+  // Only enable once the current product has loaded to avoid a race condition.
+  const { data: allProducts = [] } = useProducts(null);
+
+  // Shuffle all products, exclude the current one, pick 4 random ones.
+  const otherProducts = React.useMemo(() => {
+    if (!allProducts.length) return [];
+    const pool = allProducts.filter((p) => (p._id || p.id) !== id);
+    // Fisher-Yates shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(0, 4);
+  }, [allProducts, id]);
 
   const handleAddToCart = () => {
-    addToCart({ ...product, qty: 1 });
-    // Add qty times if more than 1
-    for (let i = 1; i < qty; i++) {
-      addToCart(product);
+    const stock = product.stock ?? Infinity;
+    const totalRequested = qty;
+
+    if (totalRequested > stock) {
+      toast.error("Out of stock!", {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+      });
+      return;
     }
-    toast.success(`${product.name} added to cart!`, {
-      style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
-      iconTheme: { primary: "#60a5fa", secondary: "#0a0a16" },
-    });
+
+    // Add qty times (store increments by 1 each call)
+    let failed = false;
+    for (let i = 0; i < totalRequested; i++) {
+      const result = addToCart(product);
+      if (result?.success === false) {
+        toast.error(result.message, {
+          style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+        });
+        failed = true;
+        break;
+      }
+    }
+
+    if (!failed) {
+      toast.success(`${product.name} added to cart!`, {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+        iconTheme: { primary: "#60a5fa", secondary: "#0a0a16" },
+      });
+    }
   };
 
   const hasRealImage =
     product?.images?.[0] &&
-    !product.images[0].includes("placeholder") &&
-    product.images[0].startsWith("/");
+    !product.images[0].includes("placeholder");
 
   return (
     <div className="min-h-screen bg-[#0a0a16] pt-24 pb-20 animate-fadeIn">
@@ -113,32 +170,99 @@ const ProductDetailPage = () => {
 
             {/* Main Detail Grid */}
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
-              {/* Image */}
-              <div className="group">
+
+              {/* ── Swipe Carousel ── */}
+              <div className="relative group/carousel select-none">
+
+                {/* Slides wrapper */}
                 <div
-                  className="aspect-square rounded-3xl overflow-hidden border border-white/5 shadow-2xl shadow-black/50 relative"
+                  className="relative aspect-square rounded-3xl overflow-hidden border border-white/5 shadow-2xl shadow-black/50"
                   style={{ backgroundColor: hasRealImage ? undefined : product.color || "#1e293b" }}
+                  onTouchStart={handleTouchStart}
+                  onTouchEnd={handleTouchEnd}
                 >
-                  {hasRealImage ? (
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="h-full w-full flex flex-col items-center justify-center gap-4">
-                      {product.category === "tshirt" ? (
+                  {/* Slide track */}
+                  <div
+                    className="flex h-full"
+                    style={{
+                      width: `${totalImgs * 100}%`,
+                      transform: `translateX(-${(selectedImg * 100) / totalImgs}%)`,
+                      transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)",
+                    }}
+                  >
+                    {hasRealImage ? (
+                      images.map((url, idx) => (
+                        <div
+                          key={idx}
+                          className="h-full shrink-0"
+                          style={{ width: `${100 / totalImgs}%` }}
+                        >
+                          <img
+                            src={url}
+                            alt={`${product.name} — view ${idx + 1}`}
+                            className="h-full w-full object-cover"
+                            draggable={false}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="h-full w-full flex flex-col items-center justify-center gap-4">
                         <ShoppingBag size={80} className="text-white/20" />
-                      ) : (
-                        <ShoppingBag size={80} className="text-white/20" />
-                      )}
-                      <p className="text-white/20 text-sm">Image coming soon</p>
+                        <p className="text-white/20 text-sm">Image coming soon</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Badge */}
+                  {product.badge && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <Badge label={product.badge} variant={product.badge} />
                     </div>
                   )}
 
-                  {product.badge && (
-                    <div className="absolute top-4 left-4">
-                      <Badge label={product.badge} variant={product.badge} />
+                  {/* Prev / Next arrows — desktop only, appear on hover */}
+                  {totalImgs > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={prevImg}
+                        aria-label="Previous image"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all duration-200 focus:outline-none hidden sm:flex items-center justify-center"
+                        style={{ backgroundColor: "rgba(0,0,0,0.55)", color: "#fff", backdropFilter: "blur(4px)" }}
+                      >
+                        <ChevronLeft size={20} strokeWidth={2.5} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={nextImg}
+                        aria-label="Next image"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all duration-200 focus:outline-none hidden sm:flex items-center justify-center"
+                        style={{ backgroundColor: "rgba(0,0,0,0.55)", color: "#fff", backdropFilter: "blur(4px)" }}
+                      >
+                        <ChevronRight size={20} strokeWidth={2.5} />
+                      </button>
+                    </>
+                  )}
+
+                  {/* Dot indicators */}
+                  {totalImgs > 1 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                      {images.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedImg(idx)}
+                          aria-label={`Go to image ${idx + 1}`}
+                          className="rounded-full transition-all duration-300 focus:outline-none"
+                          style={{
+                            width: selectedImg === idx ? "20px" : "8px",
+                            height: "8px",
+                            backgroundColor: selectedImg === idx
+                              ? "#fff"
+                              : "rgba(255,255,255,0.4)",
+                          }}
+                        />
+                      ))}
                     </div>
                   )}
                 </div>
@@ -223,14 +347,22 @@ const ProductDetailPage = () => {
                         {qty}
                       </span>
                       <button
-                        onClick={() => setQty(qty + 1)}
+                        onClick={() => {
+                          const maxQty = product.stock ?? Infinity;
+                          setQty((prev) => Math.min(prev + 1, maxQty));
+                        }}
+                        disabled={product.stock != null && qty >= product.stock}
                         aria-label="Increase quantity"
-                        className="h-9 w-9 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#60a5fa]"
+                        className="h-9 w-9 flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#60a5fa] disabled:opacity-30 disabled:cursor-not-allowed"
+                        style={{
+                          color: (product.stock != null && qty >= product.stock) ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.7)",
+                        }}
+                        onMouseEnter={(e) => { if (!(product.stock != null && qty >= product.stock)) e.currentTarget.style.color = "#fff"; }}
+                        onMouseLeave={(e) => { if (!(product.stock != null && qty >= product.stock)) e.currentTarget.style.color = "rgba(255,255,255,0.7)"; }}
                       >
                         <Plus size={15} strokeWidth={2.5} />
                       </button>
                     </div>
-                    <span className="text-sm text-white/30">In stock</span>
                   </div>
                 </div>
 
@@ -282,7 +414,7 @@ const ProductDetailPage = () => {
                     </h2>
                   </div>
                   <Link
-                    to={`/shop?category=${product.category}`}
+                    to="/shop"
                     className="text-sm text-white/40 hover:text-white transition-colors hidden sm:block"
                   >
                     View all →
@@ -290,7 +422,7 @@ const ProductDetailPage = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                   {otherProducts.map((p) => (
-                    <ProductCard key={p._id} product={p} />
+                    <ProductCard key={p._id || p.id} product={p} />
                   ))}
                 </div>
               </section>
