@@ -34,8 +34,8 @@ const ChatWidget = () => {
   const themeStyles = {
     cardBg: chatIsDark ? "#0f172a" : "#ffffff",
     headerBg: chatIsDark ? "#1e293b" : "#f8fafc",
-    inputBg: chatIsDark ? "#1e293b" : "#f8fafc",
-    textPrimary: chatIsDark ? "#f8fafc" : "#0f172a",
+    inputBg: chatIsDark ? "#475569" : "#f1f5f9", // Lighter slate for better visibility
+    textPrimary: chatIsDark ? "#ffffff" : "#0f172a", // Bright white for typed text
     textMuted: chatIsDark ? "#94a3b8" : "#64748b",
     textSecondary: chatIsDark ? "#cbd5e1" : "#475569",
     border: chatIsDark ? "#334155" : "#e2e8f0",
