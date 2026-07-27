@@ -3,6 +3,11 @@ const jwt      = require("jsonwebtoken");
 const bcrypt   = require("bcryptjs");
 const crypto   = require("crypto");
 const nodemailer = require("nodemailer");
+const dns      = require("dns");
+
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch (e) {}
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -19,6 +24,9 @@ const createTransporter = () => {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
     family: 4, // Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render
     connectionTimeout: 10000,

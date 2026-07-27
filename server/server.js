@@ -1,6 +1,12 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const dns = require("dns");
+
+// Force IPv4 DNS resolution globally so Render never tries IPv6 (ENETUNREACH)
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch (e) {}
 
 // Load env vars first
 dotenv.config();
