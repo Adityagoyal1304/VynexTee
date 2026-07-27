@@ -15,6 +15,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import ProfilePage  from "@/pages/ProfilePage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
+import ChatWidget from "@/components/ui/ChatWidget";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ const App = () => {
               },
             }}
           />
+          <ChatWidget />
           <Routes>
             <Route element={<PageWrapper />}>
               <Route path="/"             element={<HomePage />} />
