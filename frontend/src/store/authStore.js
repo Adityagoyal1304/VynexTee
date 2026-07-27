@@ -27,12 +27,18 @@ const useAuthStore = create(
         }),
 
       /** Call on logout */
-      logout: () =>
+      logout: () => {
+        try {
+          localStorage.removeItem("vynextee-chat");
+        } catch (e) {
+          // ignore localStorage errors
+        }
         set({
           user: null,
           token: null,
           isAuthenticated: false,
-        }),
+        });
+      },
     }),
     {
       name: "vynex-auth", // localStorage key
