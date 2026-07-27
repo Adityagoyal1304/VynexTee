@@ -28,11 +28,15 @@ const createTransporter = () => {
     tls: {
       rejectUnauthorized: false,
     },
-    family: 4, // Force IPv4 resolution to prevent ENETUNREACH IPv6 errors on Render
+    // Force Node.js tls.connect to ONLY resolve IPv4 (A records) so IPv6 is never attempted
+    lookup: (hostname, options, callback) => {
+      dns.lookup(hostname, { family: 4 }, (err, address, family) => {
+        callback(err, address, 4);
+      });
+    },
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
-    dnsTimeout: 10000,
   });
 };
 
