@@ -22,6 +22,11 @@ const useChatStore = create(
           isOpen: !state.isOpen,
         })),
 
+      setIsOpen: (val) =>
+        set({
+          isOpen: val,
+        }),
+
       setLoading: (val) =>
         set({
           isLoading: val,

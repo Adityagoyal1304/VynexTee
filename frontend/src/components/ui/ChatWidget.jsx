@@ -17,6 +17,7 @@ const ChatWidget = () => {
     isLoading,
     addMessage,
     toggleOpen,
+    setIsOpen,
     setLoading,
     clearChat,
   } = useChatStore();
@@ -51,6 +52,19 @@ const ChatWidget = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const prevUserIdRef = useRef(user?._id || null);
+  const widgetRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && widgetRef.current && !widgetRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, setIsOpen]);
 
   useEffect(() => {
     const currentUserId = user?._id || null;
@@ -105,7 +119,7 @@ const ChatWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
+    <div ref={widgetRef} className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
       {/* ── Chat Window ─────────────────────────────────────────── */}
       {isOpen && (
         <div
