@@ -56,10 +56,11 @@ def build_vectorstore() -> int:
         sizes_val = p.get("sizes", [])
         sizes = ", ".join(sizes_val) if isinstance(sizes_val, list) else str(sizes_val)
         stock = p.get("stock", 0)
+        availability = "In Stock" if (isinstance(stock, (int, float)) and stock > 0) else "Out of Stock"
 
         page_content = (
             f"Name: {name}. Category: {category}. Price: ₹{price}. "
-            f"Description: {description}. Sizes: {sizes}. In stock: {stock}"
+            f"Description: {description}. Sizes: {sizes}. Availability: {availability}"
         )
 
         metadata = {
