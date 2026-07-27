@@ -27,20 +27,4 @@ export const loginUser = async ({ email, password }) => {
   return data;
 };
 
-/**
- * Request a password reset email.
- */
-export const forgotPasswordRequest = async (email) => {
-  const { data } = await api.post("/auth/forgot-password", { email });
-  return data;
-};
-
-/**
- * Reset password using token from email link.
- */
-export const resetPasswordRequest = async (token, password) => {
-  const { data } = await api.put(`/auth/reset-password/${token}`, { password });
-  return data;
-};
-
-export default { registerUser, loginUser, forgotPasswordRequest, resetPasswordRequest };
+export default { registerUser, loginUser };

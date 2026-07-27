@@ -158,22 +158,13 @@ const LoginPage = () => {
 
             {/* Password */}
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="login-password"
-                  className="block text-xs font-semibold tracking-wide uppercase"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Password
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs transition-colors hover:underline"
-                  style={{ color: "var(--accent)" }}
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <label
+                htmlFor="login-password"
+                className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Password
+              </label>
               <div className="relative">
                 <Lock
                   size={15}
