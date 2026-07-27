@@ -45,8 +45,8 @@ def get_llm():
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
-    # Using gemini-1.5-flash as the standard free tier flash model in Google GenAI
-    model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+    # Using gemini-flash-latest as the standard free tier flash model in Google GenAI
+    model_name = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
     return ChatGoogleGenerativeAI(
         model=model_name,
         temperature=0.3,

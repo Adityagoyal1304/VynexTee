@@ -17,9 +17,9 @@ logger = logging.getLogger("chatbot.main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    chroma_path = Path(__file__).parent / "chroma_db"
-    if not chroma_path.exists():
-        logger.info("chroma_db directory not found on startup. Attempting automatic product ingestion...")
+    vs_path = Path(__file__).parent / "vectorstore.json"
+    if not vs_path.exists():
+        logger.info("vectorstore.json not found on startup. Attempting automatic product ingestion...")
         try:
             build_vectorstore()
         except Exception as e:

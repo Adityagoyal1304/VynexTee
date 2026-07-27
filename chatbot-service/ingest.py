@@ -4,19 +4,15 @@ import httpx
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_core.documents import Document
+from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-
-try:
-    from langchain_chroma import Chroma
-except ImportError:
-    from langchain_community.vectorstores import Chroma
 
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("chatbot.ingest")
 
-CHROMA_DIR = str(Path(__file__).parent / "chroma_db")
+VECTORSTORE_FILE = str(Path(__file__).parent / "vectorstore.json")
 
 
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
@@ -24,7 +20,7 @@ def get_embeddings() -> GoogleGenerativeAIEmbeddings:
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
     return GoogleGenerativeAIEmbeddings(
-        model=os.getenv("GEMINI_EMBEDDING_MODEL", "models/embedding-001"),
+        model=os.getenv("GEMINI_EMBEDDING_MODEL", "models/gemini-embedding-001"),
         google_api_key=api_key,
     )
 
@@ -32,7 +28,7 @@ def get_embeddings() -> GoogleGenerativeAIEmbeddings:
 def build_vectorstore() -> int:
     """
     Fetch products from the Express API, create LangChain Document objects,
-    and persist them into a local Chroma vector store.
+    and persist them into a local InMemoryVectorStore dumped to JSON.
     """
     express_url = os.getenv("EXPRESS_API_URL", "http://localhost:5000").rstrip("/")
     url = f"{express_url}/api/products"
@@ -76,34 +72,31 @@ def build_vectorstore() -> int:
 
     embeddings = get_embeddings()
 
-    os.makedirs(CHROMA_DIR, exist_ok=True)
-    vectorstore = Chroma.from_documents(
+    vectorstore = InMemoryVectorStore.from_documents(
         documents=documents,
         embedding=embeddings,
-        persist_directory=CHROMA_DIR,
     )
-    if hasattr(vectorstore, "persist"):
-        vectorstore.persist()
+    vectorstore.dump(VECTORSTORE_FILE)
 
-    logger.info(f"Successfully built Chroma vector store with {len(documents)} documents.")
+    logger.info(f"Successfully built InMemoryVectorStore with {len(documents)} documents.")
     return len(documents)
 
 
 def get_retriever():
     """
-    Load the persisted Chroma vector store and return a k=4 retriever.
-    If the vectorstore directory does not exist, attempt to build it first.
+    Load the persisted InMemoryVectorStore and return a k=4 retriever.
+    If the vectorstore file does not exist, attempt to build it first.
     """
-    if not Path(CHROMA_DIR).exists():
-        logger.info("chroma_db not found when loading retriever. Attempting to ingest catalog...")
+    if not Path(VECTORSTORE_FILE).exists():
+        logger.info("vectorstore.json not found when loading retriever. Attempting to ingest catalog...")
         try:
             build_vectorstore()
         except Exception as e:
             logger.warning(f"On-demand ingestion failed: {e}")
 
     embeddings = get_embeddings()
-    vectorstore = Chroma(
-        persist_directory=CHROMA_DIR,
-        embedding_function=embeddings,
+    vectorstore = InMemoryVectorStore.load(
+        VECTORSTORE_FILE,
+        embedding=embeddings,
     )
     return vectorstore.as_retriever(search_kwargs={"k": 4})
