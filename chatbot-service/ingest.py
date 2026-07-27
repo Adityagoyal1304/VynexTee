@@ -38,7 +38,7 @@ def build_vectorstore() -> int:
     url = f"{express_url}/api/products"
     logger.info(f"Fetching products from {url}...")
 
-    with httpx.Client(timeout=15.0) as client:
+    with httpx.Client(timeout=5.0) as client:
         response = client.get(url)
         response.raise_for_status()
         products = response.json()
