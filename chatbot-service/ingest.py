@@ -25,7 +25,7 @@ def get_embeddings() -> GoogleGenerativeAIEmbeddings:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
     return GoogleGenerativeAIEmbeddings(
         model="models/text-embedding-004",
-        google_api_key=api_key
+        google_api_key=api_key,
     )
 
 
@@ -50,7 +50,12 @@ def build_vectorstore() -> int:
     for p in products:
         name = p.get("name", "Unknown")
         category = p.get("category", "")
-        price = p.get("price", 0)
+        price_raw = p.get("price", 0)
+        try:
+            price = float(price_raw)
+        except (ValueError, TypeError):
+            price = 0.0
+
         description = p.get("description", "")
         sizes_val = p.get("sizes", [])
         sizes = ", ".join(sizes_val) if isinstance(sizes_val, list) else str(sizes_val)
@@ -65,17 +70,21 @@ def build_vectorstore() -> int:
             "id": str(p.get("_id", "")),
             "name": str(name),
             "category": str(category),
-            "price": float(price) if isinstance(price, (int, float)) else 0.0,
+            "price": price,
         }
         documents.append(Document(page_content=page_content, metadata=metadata))
 
     embeddings = get_embeddings()
 
-    Chroma.from_documents(
+    os.makedirs(CHROMA_DIR, exist_ok=True)
+    vectorstore = Chroma.from_documents(
         documents=documents,
         embedding=embeddings,
         persist_directory=CHROMA_DIR,
     )
+    if hasattr(vectorstore, "persist"):
+        vectorstore.persist()
+
     logger.info(f"Successfully built Chroma vector store with {len(documents)} documents.")
     return len(documents)
 
@@ -83,7 +92,15 @@ def build_vectorstore() -> int:
 def get_retriever():
     """
     Load the persisted Chroma vector store and return a k=4 retriever.
+    If the vectorstore directory does not exist, attempt to build it first.
     """
+    if not Path(CHROMA_DIR).exists():
+        logger.info("chroma_db not found when loading retriever. Attempting to ingest catalog...")
+        try:
+            build_vectorstore()
+        except Exception as e:
+            logger.warning(f"On-demand ingestion failed: {e}")
+
     embeddings = get_embeddings()
     vectorstore = Chroma(
         persist_directory=CHROMA_DIR,

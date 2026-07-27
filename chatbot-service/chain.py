@@ -1,10 +1,10 @@
 import os
-from operator import itemgetter
 from typing import List
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables import RunnableLambda
 from langchain_google_genai import ChatGoogleGenerativeAI
 from ingest import get_retriever
 
@@ -23,7 +23,7 @@ Product Catalog Context:
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", SYSTEM_PROMPT),
-        MessagesPlaceholder(variable_name="history"),
+        MessagesPlaceholder(variable_name="history", optional=True),
         ("human", "{question}"),
     ]
 )
@@ -33,12 +33,22 @@ def format_docs(docs) -> str:
     return "\n\n".join(doc.page_content for doc in docs)
 
 
+def get_question(input_dict: dict) -> str:
+    return input_dict.get("question", "")
+
+
+def get_history(input_dict: dict) -> List[BaseMessage]:
+    return input_dict.get("history", [])
+
+
 def get_llm():
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
+    # Using gemini-1.5-flash as the standard free tier flash model in Google GenAI
+    model_name = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
     return ChatGoogleGenerativeAI(
-        model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+        model=model_name,
         temperature=0.3,
         google_api_key=api_key,
     )
@@ -53,9 +63,9 @@ def run_chat_chain(question: str, history: List[BaseMessage]) -> str:
 
     chain = (
         {
-            "context": itemgetter("question") | retriever | format_docs,
-            "history": itemgetter("history"),
-            "question": itemgetter("question"),
+            "context": RunnableLambda(get_question) | retriever | format_docs,
+            "history": RunnableLambda(get_history),
+            "question": RunnableLambda(get_question),
         }
         | prompt
         | llm
