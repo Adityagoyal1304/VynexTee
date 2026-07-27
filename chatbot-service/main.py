@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import List, Literal
@@ -36,11 +37,14 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5000",
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
+        origin for origin in [
+            "http://localhost:5000",
+            "http://localhost:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+            os.getenv("EXPRESS_API_URL")
+        ] if origin
     ],
     allow_credentials=True,
     allow_methods=["*"],
