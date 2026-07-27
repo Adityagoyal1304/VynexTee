@@ -378,17 +378,15 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Add to Cart */}
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
+                <button
+                  type="button"
                   onClick={handleAddToCart}
-                  className="text-base mb-4"
+                  className="add-to-cart-btn mb-4"
                   aria-label={`Add ${product.name} to cart`}
                 >
-                  <ShoppingBag size={18} />
-                  Add to Cart — {formatPrice(product.price * qty)}
-                </Button>
+                  <ShoppingBag size={19} />
+                  <span>Add to Cart — {formatPrice(product.price * qty)}</span>
+                </button>
 
                 {/* Shipping Info */}
                 <div className="mt-4 grid grid-cols-3 gap-3">
