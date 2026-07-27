@@ -1,0 +1,10 @@
+{
+  "venvPath": "chatbot-service",
+  "venv": "venv",
+  "extraPaths": [
+    "chatbot-service",
+    "."
+  ],
+  "reportMissingImports": "none",
+  "reportMissingModuleSource": "none"
+}

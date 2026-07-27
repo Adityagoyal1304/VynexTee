@@ -1,6 +1,14 @@
 {
   "python.defaultInterpreterPath": "${workspaceFolder}/chatbot-service/venv/Scripts/python.exe",
   "python.analysis.extraPaths": [
-    "${workspaceFolder}/chatbot-service"
-  ]
+    "${workspaceFolder}/chatbot-service",
+    "./chatbot-service"
+  ],
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none",
+    "reportGeneralTypeIssues": "none",
+    "reportOptionalMemberAccess": "none"
+  }
 }
