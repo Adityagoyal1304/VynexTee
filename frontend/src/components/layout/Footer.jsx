@@ -69,7 +69,6 @@ const Footer = () => {
                 { label: "T-Shirts", to: "/shop?category=tshirt" },
                 { label: "Bags", to: "/shop?category=bag" },
                 { label: "New Arrivals", to: "/shop" },
-                { label: "Bestsellers", to: "/shop" },
               ].map(({ label, to }) => (
                 <li key={label}>
                   <Link

@@ -121,7 +121,7 @@ const Navbar = () => {
           className="hidden md:flex flex-1 px-4"
           role="search"
         >
-          <div className="relative">
+          <div className="relative w-full max-w-xl mx-auto">
             <Search
               size={14}
               className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
