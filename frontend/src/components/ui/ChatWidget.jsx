@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import useChatStore from "@/store/chatStore";
 import useAuthStore from "@/store/authStore";
+import { useTheme } from "@/context/ThemeContext";
 import { sendMessage } from "@/services/chatService";
 
 const ChatWidget = () => {
@@ -21,7 +22,30 @@ const ChatWidget = () => {
   } = useChatStore();
 
   const { user, isAuthenticated } = useAuthStore();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
+
+  // INVERTED THEME:
+  // If website isDark (dark theme) -> chatbot uses light theme
+  // If website isLight (light theme) -> chatbot uses dark theme
+  const chatIsDark = !isDark;
+
+  const themeStyles = {
+    cardBg: chatIsDark ? "#0f172a" : "#ffffff",
+    headerBg: chatIsDark ? "#1e293b" : "#f8fafc",
+    inputBg: chatIsDark ? "#1e293b" : "#f8fafc",
+    textPrimary: chatIsDark ? "#f8fafc" : "#0f172a",
+    textMuted: chatIsDark ? "#94a3b8" : "#64748b",
+    textSecondary: chatIsDark ? "#cbd5e1" : "#475569",
+    border: chatIsDark ? "#334155" : "#e2e8f0",
+    botBubbleBg: chatIsDark ? "#1e293b" : "#f1f5f9",
+    botBubbleText: chatIsDark ? "#f8fafc" : "#0f172a",
+    botBubbleBorder: chatIsDark ? "#334155" : "#cbd5e1",
+    accentGlow: chatIsDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.08)",
+    shadow: chatIsDark
+      ? "0 25px 50px -12px rgba(0, 0, 0, 0.75)"
+      : "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
+  };
 
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
@@ -81,38 +105,39 @@ const ChatWidget = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end">
       {/* ── Chat Window ─────────────────────────────────────────── */}
       {isOpen && (
         <div
-          className="mb-4 flex flex-col w-[calc(100vw-2rem)] sm:w-96 h-[500px] max-h-[80vh] rounded-2xl shadow-2xl overflow-hidden border animate-fadeIn"
+          className="mb-4 flex flex-col w-[calc(100vw-2rem)] sm:w-96 h-[500px] max-h-[calc(100vh-120px)] rounded-2xl overflow-hidden border animate-fadeIn transition-all duration-300"
           style={{
-            backgroundColor: "var(--bg-card)",
-            borderColor: "var(--border-light)",
+            backgroundColor: themeStyles.cardBg,
+            borderColor: themeStyles.border,
+            boxShadow: themeStyles.shadow,
           }}
         >
           {/* Header */}
           <div
-            className="flex items-center justify-between px-4 py-3 border-b"
+            className="flex items-center justify-between px-4 py-3 border-b transition-colors duration-300"
             style={{
-              backgroundColor: "var(--bg-page)",
-              borderColor: "var(--border-light)",
+              backgroundColor: themeStyles.headerBg,
+              borderColor: themeStyles.border,
             }}
           >
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#3b82f6] text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#3b82f6] text-white shadow-sm">
                 <Sparkles size={17} />
               </div>
               <div>
                 <h3
                   className="text-sm font-bold leading-tight"
-                  style={{ color: "var(--text-primary)" }}
+                  style={{ color: themeStyles.textPrimary }}
                 >
                   VynexTee Assistant
                 </h3>
                 <p
                   className="text-[11px]"
-                  style={{ color: "var(--text-muted)" }}
+                  style={{ color: themeStyles.textMuted }}
                 >
                   {isAuthenticated && user?.name
                     ? `Personal Guide for ${user.name.split(" ")[0]}`
@@ -131,7 +156,7 @@ const ChatWidget = () => {
                   }}
                   title="Clear chat"
                   className="p-1.5 rounded-lg transition-colors hover:bg-white/10"
-                  style={{ color: "var(--text-secondary)" }}
+                  style={{ color: themeStyles.textSecondary }}
                   aria-label="Clear chat"
                 >
                   <Trash2 size={15} />
@@ -142,7 +167,7 @@ const ChatWidget = () => {
                 onClick={toggleOpen}
                 title="Close chat"
                 className="p-1.5 rounded-lg transition-colors hover:bg-white/10"
-                style={{ color: "var(--text-secondary)" }}
+                style={{ color: themeStyles.textSecondary }}
                 aria-label="Close chat"
               >
                 <X size={18} />
@@ -154,9 +179,9 @@ const ChatWidget = () => {
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-4">
               <div
                 className="flex h-16 w-16 items-center justify-center rounded-2xl shadow-inner relative"
-                style={{ backgroundColor: "var(--accent-glow)" }}
+                style={{ backgroundColor: themeStyles.accentGlow }}
               >
-                <Bot size={30} style={{ color: "var(--accent)" }} />
+                <Bot size={30} className="text-[#3b82f6]" />
                 <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow">
                   <Lock size={12} />
                 </div>
@@ -168,13 +193,13 @@ const ChatWidget = () => {
                 </span>
                 <h4
                   className="text-base font-bold"
-                  style={{ color: "var(--text-primary)" }}
+                  style={{ color: themeStyles.textPrimary }}
                 >
                   Sign In to Chat with AI
                 </h4>
                 <p
                   className="text-xs leading-relaxed"
-                  style={{ color: "var(--text-muted)" }}
+                  style={{ color: themeStyles.textMuted }}
                 >
                   Sign in to get instant answers about stock, sizes, fabrics, and personalized VynexTee shopping advice.
                 </p>
@@ -201,8 +226,8 @@ const ChatWidget = () => {
                   }}
                   className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl font-medium text-xs border transition-colors hover:bg-white/5"
                   style={{
-                    color: "var(--text-primary)",
-                    borderColor: "var(--border-light)",
+                    color: themeStyles.textPrimary,
+                    borderColor: themeStyles.border,
                   }}
                 >
                   <UserPlus size={15} />
@@ -210,7 +235,7 @@ const ChatWidget = () => {
                 </button>
               </div>
 
-              <p className="text-[10px] pt-1" style={{ color: "var(--text-muted)" }}>
+              <p className="text-[10px] pt-1" style={{ color: themeStyles.textMuted }}>
                 🔒 Your conversation is private and cleared on logout.
               </p>
             </div>
@@ -222,19 +247,19 @@ const ChatWidget = () => {
                   <div className="flex flex-col items-center justify-center h-full text-center px-4 gap-2">
                     <div
                       className="flex h-12 w-12 items-center justify-center rounded-2xl"
-                      style={{ backgroundColor: "var(--accent-glow)" }}
+                      style={{ backgroundColor: themeStyles.accentGlow }}
                     >
-                      <Bot size={24} style={{ color: "var(--accent)" }} />
+                      <Bot size={24} className="text-[#3b82f6]" />
                     </div>
                     <p
                       className="text-sm font-semibold mt-1"
-                      style={{ color: "var(--text-primary)" }}
+                      style={{ color: themeStyles.textPrimary }}
                     >
                       Hi there! 👋
                     </p>
                     <p
                       className="text-xs max-w-[240px]"
-                      style={{ color: "var(--text-muted)" }}
+                      style={{ color: themeStyles.textMuted }}
                     >
                       Ask me anything about VynexTee T-shirts, premium bags, pricing, or stock.
                     </p>
@@ -250,30 +275,33 @@ const ChatWidget = () => {
                         }`}
                       >
                         {!isUser && (
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white mt-0.5">
+                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white mt-0.5 shadow-sm">
                             <Bot size={14} />
                           </div>
                         )}
                         <div
                           className={`max-w-[78%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed ${
                             isUser
-                              ? "bg-[#3b82f6] text-white rounded-tr-sm"
-                              : "rounded-tl-sm"
+                              ? "bg-[#3b82f6] text-white rounded-tr-sm shadow-sm"
+                              : "rounded-tl-sm shadow-sm"
                           }`}
                           style={
                             isUser
                               ? {}
                               : {
-                                  backgroundColor: "var(--bg-page)",
-                                  color: "var(--text-primary)",
-                                  border: "1px solid var(--border-light)",
+                                  backgroundColor: themeStyles.botBubbleBg,
+                                  color: themeStyles.botBubbleText,
+                                  border: `1px solid ${themeStyles.botBubbleBorder}`,
                                 }
                           }
                         >
                           {msg.content}
                         </div>
                         {isUser && (
-                          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white mt-0.5">
+                          <div
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white mt-0.5 shadow-sm"
+                            style={{ backgroundColor: "#3b82f6" }}
+                          >
                             <User size={14} />
                           </div>
                         )}
@@ -284,15 +312,15 @@ const ChatWidget = () => {
 
                 {isLoading && (
                   <div className="flex items-center gap-2 justify-start">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-sm">
                       <Bot size={14} />
                     </div>
                     <div
-                      className="px-3.5 py-2 rounded-2xl rounded-tl-sm text-xs flex items-center gap-1"
+                      className="px-3.5 py-2 rounded-2xl rounded-tl-sm text-xs flex items-center gap-1 shadow-sm"
                       style={{
-                        backgroundColor: "var(--bg-page)",
-                        color: "var(--text-muted)",
-                        border: "1px solid var(--border-light)",
+                        backgroundColor: themeStyles.botBubbleBg,
+                        color: themeStyles.textMuted,
+                        border: `1px solid ${themeStyles.botBubbleBorder}`,
                       }}
                     >
                       <span>typing…</span>
@@ -305,10 +333,10 @@ const ChatWidget = () => {
               {/* Input Area */}
               <form
                 onSubmit={handleSend}
-                className="flex items-center gap-2 p-3 border-t"
+                className="flex items-center gap-2 p-3 border-t transition-colors duration-300"
                 style={{
-                  backgroundColor: "var(--bg-page)",
-                  borderColor: "var(--border-light)",
+                  backgroundColor: themeStyles.inputBg,
+                  borderColor: themeStyles.border,
                 }}
               >
                 <input
@@ -317,10 +345,10 @@ const ChatWidget = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about T-shirts, bags, sizes..."
-                  className="flex-1 bg-transparent px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#3b82f6]"
+                  className="flex-1 bg-transparent px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition-colors"
                   style={{
-                    color: "var(--text-primary)",
-                    borderColor: "var(--border-light)",
+                    color: themeStyles.textPrimary,
+                    borderColor: themeStyles.border,
                   }}
                   disabled={isLoading}
                 />
