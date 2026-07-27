@@ -15,6 +15,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import ProfilePage  from "@/pages/ProfilePage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
+import ResetPasswordPage  from "@/pages/ResetPasswordPage";
 import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
 const queryClient = new QueryClient({
@@ -56,9 +57,10 @@ const App = () => {
               <Route path="/shop"         element={<ShopPage />} />
               <Route path="/product/:id"  element={<ProductDetailPage />} />
               <Route path="/cart"         element={<CartPage />} />
-              <Route path="/login"           element={<LoginPage />} />
-              <Route path="/register"        element={<RegisterPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/login"                  element={<LoginPage />} />
+              <Route path="/register"               element={<RegisterPage />} />
+              <Route path="/forgot-password"        element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:token"  element={<ResetPasswordPage />} />
               
               {/* Protected Routes */}
               <Route 

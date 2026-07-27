@@ -13,8 +13,6 @@ const api = axios.create({
 
 /**
  * Register a new user.
- * @param {{ name: string, email: string, password: string }} payload
- * @returns {Promise<{ _id, name, email, role, token }>}
  */
 export const registerUser = async ({ name, email, password }) => {
   const { data } = await api.post("/auth/register", { name, email, password });
@@ -23,12 +21,26 @@ export const registerUser = async ({ name, email, password }) => {
 
 /**
  * Login an existing user.
- * @param {{ email: string, password: string }} payload
- * @returns {Promise<{ _id, name, email, role, token }>}
  */
 export const loginUser = async ({ email, password }) => {
   const { data } = await api.post("/auth/login", { email, password });
   return data;
 };
 
-export default { registerUser, loginUser };
+/**
+ * Request a password reset email.
+ */
+export const forgotPasswordRequest = async (email) => {
+  const { data } = await api.post("/auth/forgot-password", { email });
+  return data;
+};
+
+/**
+ * Reset password using token from email link.
+ */
+export const resetPasswordRequest = async (token, password) => {
+  const { data } = await api.put(`/auth/reset-password/${token}`, { password });
+  return data;
+};
+
+export default { registerUser, loginUser, forgotPasswordRequest, resetPasswordRequest };

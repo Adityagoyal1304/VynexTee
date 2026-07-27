@@ -1,19 +1,26 @@
-// src/pages/ForgotPasswordPage.jsx
+// src/pages/ResetPasswordPage.jsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Mail, ArrowLeft, KeyRound, CheckCircle } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { Lock, ArrowLeft, KeyRound, Eye, EyeOff, CheckCircle } from "lucide-react";
 import toast from "react-hot-toast";
-import { forgotPasswordRequest } from "@/services/authService";
+import { resetPasswordRequest } from "@/services/authService";
 
-const ForgotPasswordPage = () => {
-  const [email,     setEmail]     = useState("");
-  const [loading,   setLoading]   = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error,     setError]     = useState("");
+const ResetPasswordPage = () => {
+  const { token } = useParams();
+  const navigate  = useNavigate();
+
+  const [password,        setPassword]        = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPw,          setShowPw]          = useState(false);
+  const [showConfirmPw,   setShowConfirmPw]   = useState(false);
+  const [loading,         setLoading]         = useState(false);
+  const [submitted,       setSubmitted]       = useState(false);
+  const [error,           setError]           = useState("");
 
   const validate = () => {
-    if (!email.trim()) return "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter a valid email";
+    if (!password) return "Password is required";
+    if (password.length < 6) return "Password must be at least 6 characters";
+    if (password !== confirmPassword) return "Passwords do not match";
     return "";
   };
 
@@ -25,11 +32,12 @@ const ForgotPasswordPage = () => {
     setLoading(true);
 
     try {
-      await forgotPasswordRequest(email);
+      await resetPasswordRequest(token, password);
       setSubmitted(true);
-      toast.success("Reset link sent!");
+      toast.success("Password reset successfully!");
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
-      const msg = err?.response?.data?.message || "Failed to send reset link";
+      const msg = err?.response?.data?.message || "Invalid or expired reset token";
       toast.error(msg);
       setError(msg);
     } finally {
@@ -84,10 +92,10 @@ const ForgotPasswordPage = () => {
               className="text-2xl font-bold"
               style={{ fontFamily: "Syne, sans-serif", color: "var(--text-primary)" }}
             >
-              Forgot password?
+              Reset Password
             </h1>
             <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
-              No worries, we'll send you reset instructions.
+              Create a new secure password for your account.
             </p>
           </div>
 
@@ -102,56 +110,106 @@ const ForgotPasswordPage = () => {
               </div>
               <div>
                 <p className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
-                  Check your email
+                  Password Reset Complete!
                 </p>
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                  If <span className="font-medium" style={{ color: "var(--accent)" }}>{email}</span> is
-                  registered, you'll receive password reset instructions shortly.
+                  Your password has been changed successfully. Redirecting you to sign in...
                 </p>
               </div>
-              <p className="text-xs mt-2" style={{ color: "var(--text-muted)" }}>
-                Didn't receive it? Check your spam folder.
-              </p>
+              <Link
+                to="/login"
+                className="mt-3 inline-block px-6 py-2.5 rounded-xl text-xs font-semibold text-white transition-all"
+                style={{ backgroundColor: "var(--accent-deep)" }}
+              >
+                Sign In Now
+              </Link>
             </div>
           ) : (
             /* Form */
             <form onSubmit={handleSubmit} noValidate>
-              <div className="mb-6">
+              {/* New Password */}
+              <div className="mb-4">
                 <label
-                  htmlFor="fp-email"
+                  htmlFor="rp-password"
                   className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Email
+                  New Password
                 </label>
                 <div className="relative">
-                  <Mail
+                  <Lock
                     size={15}
                     className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
                     style={{ color: "var(--text-muted)" }}
                   />
                   <input
-                    id="fp-email"
-                    type="email"
-                    autoComplete="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                    className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl"
+                    id="rp-password"
+                    type={showPw ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                    className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl"
                     style={{
                       backgroundColor: "var(--bg-page)",
-                      border: error
-                        ? "1px solid rgba(239,68,68,0.6)"
-                        : "1px solid var(--border)",
+                      border: error ? "1px solid rgba(239,68,68,0.6)" : "1px solid var(--border)",
                       color: "var(--text-primary)",
                     }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((v) => !v)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div className="mb-6">
+                <label
+                  htmlFor="rp-confirm-password"
+                  className="block text-xs font-semibold tracking-wide mb-1.5 uppercase"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Confirm New Password
+                </label>
+                <div className="relative">
+                  <Lock
+                    size={15}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                    style={{ color: "var(--text-muted)" }}
+                  />
+                  <input
+                    id="rp-confirm-password"
+                    type={showConfirmPw ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setError(""); }}
+                    className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl"
+                    style={{
+                      backgroundColor: "var(--bg-page)",
+                      border: error ? "1px solid rgba(239,68,68,0.6)" : "1px solid var(--border)",
+                      color: "var(--text-primary)",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPw((v) => !v)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2"
+                    style={{ color: "var(--text-muted)" }}
+                  >
+                    {showConfirmPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
                 </div>
                 {error && <p className="text-xs mt-1" style={{ color: "#f87171" }}>{error}</p>}
               </div>
 
               <button
-                id="fp-submit"
+                id="rp-submit"
                 type="submit"
                 disabled={loading}
                 className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-200"
@@ -167,10 +225,10 @@ const ForgotPasswordPage = () => {
                       className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin"
                       style={{ display: "inline-block" }}
                     />
-                    Sending…
+                    Resetting…
                   </>
                 ) : (
-                  "Send Reset Instructions"
+                  "Update Password"
                 )}
               </button>
             </form>
@@ -198,4 +256,4 @@ const ForgotPasswordPage = () => {
   );
 };
 
-export default ForgotPasswordPage;
+export default ResetPasswordPage;
