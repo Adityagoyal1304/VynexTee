@@ -1,11 +1,12 @@
 // src/components/product/ProductCard.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/utils/formatPrice";
 import Badge from "@/components/ui/Badge";
+import useAuthStore from "@/store/authStore";
 
 const ProductImagePlaceholder = ({ color, name }) => (
   <div
@@ -27,6 +28,8 @@ const ProductImagePlaceholder = ({ color, name }) => (
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
   const { _id, id, name, price, category, badge, images, color } = product;
   const productId = _id || id; // support both MongoDB (_id) and local mock (id)
   const hasRealImage =
@@ -35,6 +38,16 @@ const ProductCard = ({ product }) => {
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!isAuthenticated) {
+      toast.error("Please sign in to add items to cart", {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+        icon: "🔒",
+      });
+      navigate("/login");
+      return;
+    }
+
     const result = addToCart(product);
     if (result?.success === false) {
       toast.error(result.message, {

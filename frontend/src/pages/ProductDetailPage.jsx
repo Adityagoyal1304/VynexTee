@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import ProductCard from "@/components/product/ProductCard";
 import Spinner from "@/components/ui/Spinner";
+import useAuthStore from "@/store/authStore";
 
 // Skeleton for loading state
 const DetailSkeleton = () => (
@@ -37,6 +38,7 @@ const ProductDetailPage = () => {
   const { addToCart } = useCart();
 
   const { data: product, isLoading, isError } = useProduct(id);
+  const { isAuthenticated } = useAuthStore();
   const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedImg, setSelectedImg] = useState(0);
@@ -85,6 +87,15 @@ const ProductDetailPage = () => {
   }, [allProducts, id]);
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      toast.error("Please sign in to add items to cart", {
+        style: { background: "#111827", color: "#f8f8f8", border: "1px solid #1e293b" },
+        icon: "🔒",
+      });
+      navigate("/login");
+      return;
+    }
+
     const stock = product.stock ?? Infinity;
     const totalRequested = qty;
 
