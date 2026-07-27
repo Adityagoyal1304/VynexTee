@@ -29,13 +29,72 @@ A premium, modern MERN stack e-commerce platform for curated t-shirts and bags. 
   - Create, view, and delete products.
   - Upload product images directly to Cloudinary.
   - View all customer orders and update their shipping status (Pending, Shipped, Delivered, Cancelled).
+- **AI Shopping Assistant:** Intelligent chatbot using LangChain RAG with Google Gemini (`gemini-2.5-flash`), FastAPI, and Chroma vector DB.
+
+## 🤖 AI Shopping Assistant
+
+VynexTee includes a basic AI shopping assistant chatbot built as a separate Python microservice using **FastAPI**, **LangChain**, and **Chroma** (RAG over the product catalog with Google Gemini Free Tier).
+
+### Architecture
+
+```
+React frontend (ChatWidget)
+      │  POST /api/chat  { message, history }
+      ▼
+Express server (thin proxy route, port 5000)
+      │  POST http://localhost:8000/chat
+      ▼
+FastAPI + LangChain microservice (port 8000)
+      │  RAG: Chroma retriever over product catalog
+      │  Catalog source: GET http://localhost:5000/api/products
+      ▼
+Gemini (free tier)
+```
+
+### Setup & Running the Chatbot Microservice
+
+1. **Navigate to the chatbot service directory:**
+   ```bash
+   cd chatbot-service
+   ```
+
+2. **Create and activate a Python virtual environment:**
+   ```bash
+   # On Windows:
+   python -m venv venv
+   .\venv\Scripts\activate
+
+   # On macOS/Linux:
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables:**
+   Create a `.env` file inside `chatbot-service/` (do not commit your API key):
+   ```env
+   GOOGLE_API_KEY=your_google_gemini_api_key_here
+   EXPRESS_API_URL=http://localhost:5000
+   ```
+
+5. **Start the microservice:**
+   ```bash
+   uvicorn main:app --reload --port 8000
+   ```
+
+When started for the first time, the service will automatically fetch the product catalog from the Express API (`http://localhost:5000/api/products`) and embed the products into a local Chroma vector store (`chatbot-service/chroma_db/`). You can also manually refresh the vector store at any time by calling `POST http://localhost:8000/refresh`.
 
 ## 📁 Folder Structure
 
-The repository is organized into two main workspaces:
+The repository is organized into three main workspaces:
 
 - `frontend/` - Contains the React Vite application.
 - `server/` - Contains the Node.js / Express backend API.
+- `chatbot-service/` - Contains the Python FastAPI + LangChain chatbot microservice.
 
 ## 🛠️ Local Setup Instructions
 
