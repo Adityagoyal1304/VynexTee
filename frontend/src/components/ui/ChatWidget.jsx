@@ -349,7 +349,7 @@ const ChatWidget = () => {
                 onSubmit={handleSend}
                 className="flex items-center gap-2 p-3 border-t transition-colors duration-300"
                 style={{
-                  backgroundColor: themeStyles.inputBg,
+                  backgroundColor: chatIsDark ? "#0f172a" : "#ffffff", // Match card background
                   borderColor: themeStyles.border,
                 }}
               >
@@ -359,8 +359,9 @@ const ChatWidget = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask about T-shirts, bags, sizes..."
-                  className="flex-1 bg-transparent px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition-colors"
+                  className="flex-1 px-3 py-2 text-sm rounded-xl border focus:outline-none focus:ring-2 focus:ring-[#3b82f6] transition-colors"
                   style={{
+                    backgroundColor: chatIsDark ? "#1e293b" : "#f1f5f9", // Explicit input pill color
                     color: themeStyles.textPrimary,
                     borderColor: themeStyles.border,
                   }}
