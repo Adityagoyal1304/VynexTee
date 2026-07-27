@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ShoppingBag, Sun, Moon, Search, User, ChevronDown,
-  Shirt, Settings, Heart, X, Package,
+  Shirt, Settings, Heart, X, Package, Menu,
 } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useTheme } from "@/context/ThemeContext";
@@ -15,13 +15,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
 
-  const [scrolled,     setScrolled]     = useState(false);
-  const [prevItems,    setPrevItems]     = useState(0);
-  const [cartPop,      setCartPop]       = useState(false);
-  const [searchQuery,  setSearchQuery]   = useState("");
-  const [searchActive, setSearchActive]  = useState(false);
-  const [storeOpen,    setStoreOpen]     = useState(false);
-  const [profileOpen,  setProfileOpen]   = useState(false);
+  const [scrolled,       setScrolled]     = useState(false);
+  const [prevItems,      setPrevItems]     = useState(0);
+  const [cartPop,        setCartPop]       = useState(false);
+  const [searchQuery,    setSearchQuery]   = useState("");
+  const [searchActive,   setSearchActive]  = useState(false);
+  const [storeOpen,      setStoreOpen]     = useState(false);
+  const [profileOpen,    setProfileOpen]   = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const storeRef   = useRef(null);
   const profileRef = useRef(null);
@@ -72,10 +73,18 @@ const Navbar = () => {
     }
   };
 
-  const closeAll = () => { setStoreOpen(false); setProfileOpen(false); };
+  const closeAll = () => { setStoreOpen(false); setProfileOpen(false); setMobileMenuOpen(false); };
 
   /* ─────────────────────────────────────────────────────────── */
+  // close mobile menu on body scroll
+  useEffect(() => {
+    if (mobileMenuOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileMenuOpen]);
+
   return (
+    <>
     <header
       className={`nav-surface fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${scrolled ? "scrolled" : ""}`}
       role="banner"
@@ -109,7 +118,7 @@ const Navbar = () => {
         <form
           ref={searchRef}
           onSubmit={handleSearch}
-          className="flex-1 px-4"
+          className="hidden md:flex flex-1 px-4"
           role="search"
         >
           <div className="relative">
@@ -401,9 +410,168 @@ const Navbar = () => {
               : <Moon size={16} strokeWidth={1.8} />
             }
           </button>
+
+          {/* ── 7. HAMBURGER (mobile only) ── */}
+          <button
+            className="md:hidden p-2 rounded-xl text-white/65 hover:text-white hover:bg-white/5 transition-all duration-200"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            aria-label="Toggle mobile menu"
+          >
+            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </nav>
     </header>
+
+    {/* ══════════════════════════════════════════════════
+        MOBILE FULL-SCREEN MENU DRAWER
+    ══════════════════════════════════════════════════ */}
+    <div
+      className={`fixed inset-0 z-40 flex flex-col transition-all duration-300 md:hidden ${
+        mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+      style={{ background: "#060d1a", paddingTop: "64px" }}
+      aria-hidden={!mobileMenuOpen}
+    >
+      {/* Search bar in drawer */}
+      <div className="px-5 pt-6 pb-4">
+        <form
+          onSubmit={(e) => { handleSearch(e); setMobileMenuOpen(false); }}
+          role="search"
+        >
+          <div className="relative">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+              style={{ color: "rgba(255,255,255,0.35)" }}
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tees, bags…"
+              aria-label="Search products"
+              className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
+              style={{
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(96,165,250,0.25)",
+                color: "#fff",
+              }}
+            />
+          </div>
+        </form>
+      </div>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "0 20px" }} />
+
+      {/* Nav links */}
+      <nav className="flex flex-col px-4 pt-4 gap-1" aria-label="Mobile navigation">
+        <p
+          className="text-[10px] font-semibold tracking-widest uppercase px-3 py-2"
+          style={{ color: "var(--accent)" }}
+        >
+          Shop by Category
+        </p>
+
+        <Link
+          to="/shop"
+          onClick={closeAll}
+          className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all"
+          style={{ color: "rgba(255,255,255,0.80)", background: "rgba(255,255,255,0.04)" }}
+        >
+          <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(96,165,250,0.12)" }}>
+            <Package size={17} style={{ color: "var(--accent)" }} />
+          </div>
+          <div>
+            <p className="font-semibold text-white">All Products</p>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>Browse everything</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/shop?category=tshirt"
+          onClick={closeAll}
+          className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all"
+          style={{ color: "rgba(255,255,255,0.80)" }}
+        >
+          <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(96,165,250,0.10)" }}>
+            <Shirt size={17} style={{ color: "var(--accent)" }} />
+          </div>
+          <div>
+            <p className="font-semibold text-white">T-Shirts</p>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>Oversized · Polo · Vintage</p>
+          </div>
+        </Link>
+
+        <Link
+          to="/shop?category=bag"
+          onClick={closeAll}
+          className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all"
+          style={{ color: "rgba(255,255,255,0.80)" }}
+        >
+          <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(96,165,250,0.10)" }}>
+            <ShoppingBag size={17} style={{ color: "var(--accent)" }} />
+          </div>
+          <div>
+            <p className="font-semibold text-white">Bags</p>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>Totes · Slings · Backpacks</p>
+          </div>
+        </Link>
+      </nav>
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "rgba(255,255,255,0.07)", margin: "16px 20px" }} />
+
+      {/* Auth section */}
+      <div className="px-4">
+        {isAuthenticated ? (
+          <>
+            <button
+              onClick={() => { closeAll(); navigate("/profile"); }}
+              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm transition-all mb-2"
+              style={{ color: "rgba(255,255,255,0.80)" }}
+            >
+              <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(96,165,250,0.10)" }}>
+                <User size={17} style={{ color: "var(--accent)" }} />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-white">{user?.name}</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{user?.email}</p>
+              </div>
+            </button>
+            {user?.role === "admin" && (
+              <button
+                onClick={() => { closeAll(); navigate("/admin"); }}
+                className="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm transition-all mb-2"
+                style={{ color: "rgba(255,255,255,0.80)" }}
+              >
+                <div className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: "rgba(34,197,94,0.10)" }}>
+                  <Settings size={17} style={{ color: "#4ade80" }} />
+                </div>
+                <p className="font-semibold text-white">Admin Dashboard</p>
+              </button>
+            )}
+            <button
+              onClick={() => { logout(); closeAll(); navigate("/"); }}
+              className="w-full py-3 rounded-xl text-sm font-semibold mt-2 transition-all"
+              style={{ backgroundColor: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.20)" }}
+            >
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => { closeAll(); navigate("/login"); }}
+            className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all"
+            style={{ backgroundColor: "var(--accent-deep)" }}
+          >
+            Sign In / Register
+          </button>
+        )}
+      </div>
+    </div>
+    </>
   );
 };
 
