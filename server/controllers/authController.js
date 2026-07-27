@@ -11,13 +11,20 @@ const generateToken = (id) => {
 };
 
 // ─── Email transporter ────────────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const createTransporter = () => {
+  return nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // Use SSL
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    connectionTimeout: 10000, // 10 seconds max - do not hang forever
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  });
+};
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -107,6 +114,11 @@ const forgotPassword = async (req, res, next) => {
       throw new Error("Please provide an email");
     }
 
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      res.status(500);
+      throw new Error("Email service is not configured on the server. Please add EMAIL_USER and EMAIL_PASS to Render environment variables.");
+    }
+
     const user = await User.findOne({ email: email.toLowerCase() });
 
     // Always respond with 200 to prevent email enumeration
@@ -168,7 +180,17 @@ const forgotPassword = async (req, res, next) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    const transporter = createTransporter();
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (emailErr) {
+      console.error("Nodemailer sendMail failed:", emailErr);
+      user.resetPasswordToken  = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save();
+      res.status(500);
+      throw new Error("Failed to send email: " + (emailErr.message || "Email server error"));
+    }
 
     res.status(200).json({
       message: "If that email is registered, you will receive reset instructions.",
