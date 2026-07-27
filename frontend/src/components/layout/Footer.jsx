@@ -37,9 +37,9 @@ const Footer = () => {
             </p>
             <div className="flex gap-3">
               {[
-                { Icon: Globe,  href: "#", label: "Website" },
+                { Icon: Globe, href: "#", label: "Website" },
                 { Icon: Share2, href: "#", label: "Share" },
-                { Icon: Play,   href: "#", label: "YouTube" },
+                { Icon: Play, href: "#", label: "YouTube" },
               ].map(({ Icon, href, label }) => (
                 <a
                   key={label}
@@ -65,11 +65,11 @@ const Footer = () => {
             <h3 className="text-xs font-semibold text-white uppercase tracking-widest mb-4">Shop</h3>
             <ul className="space-y-3">
               {[
-                { label: "All Products",  to: "/shop" },
-                { label: "T-Shirts",      to: "/shop?category=tshirt" },
-                { label: "Bags",          to: "/shop?category=bag" },
-                { label: "New Arrivals",  to: "/shop" },
-                { label: "Bestsellers",   to: "/shop" },
+                { label: "All Products", to: "/shop" },
+                { label: "T-Shirts", to: "/shop?category=tshirt" },
+                { label: "Bags", to: "/shop?category=bag" },
+                { label: "New Arrivals", to: "/shop" },
+                { label: "Bestsellers", to: "/shop" },
               ].map(({ label, to }) => (
                 <li key={label}>
                   <Link
@@ -108,18 +108,18 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
                 <MapPin size={15} className="mt-0.5 shrink-0" style={{ color: "var(--accent)" }} />
-                <span>123 Fashion Street, Mumbai, MH 400001</span>
+                <span>Jay Shree traders, Agra, 282005</span>
               </li>
               <li>
-                <a href="mailto:hello@vynextee.com" className="flex items-center gap-3 text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <a href="mailto:bitugoyal2004@gmail.com" className="flex items-center gap-3 text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
                   <Mail size={15} style={{ color: "var(--accent)" }} />
-                  hello@vynextee.com
+                  bitugoyal2004@gmail.com
                 </a>
               </li>
               <li>
-                <a href="tel:+919999999999" className="flex items-center gap-3 text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <a href="tel:+918445417240" className="flex items-center gap-3 text-sm hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.4)" }}>
                   <Phone size={15} style={{ color: "var(--accent)" }} />
-                  +91 99999 99999
+                  +91 8445417240
                 </a>
               </li>
             </ul>
