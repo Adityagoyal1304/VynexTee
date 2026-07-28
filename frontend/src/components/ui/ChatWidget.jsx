@@ -10,6 +10,22 @@ import useAuthStore from "@/store/authStore";
 import { useTheme } from "@/context/ThemeContext";
 import { sendMessage } from "@/services/chatService";
 
+const formatMessageContent = (text) => {
+  if (!text) return null;
+  // Split the text by **bold** markdown
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={index} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
+
 const ChatWidget = () => {
   const {
     messages,
@@ -294,7 +310,7 @@ const ChatWidget = () => {
                           </div>
                         )}
                         <div
-                          className={`max-w-[78%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed ${
+                          className={`max-w-[78%] px-3.5 py-2 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${
                             isUser
                               ? "bg-[#3b82f6] text-white rounded-tr-sm shadow-sm"
                               : "rounded-tl-sm shadow-sm"
@@ -309,8 +325,9 @@ const ChatWidget = () => {
                                 }
                           }
                         >
-                          {msg.content}
+                          {formatMessageContent(msg.content)}
                         </div>
+
                         {isUser && (
                           <div
                             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white mt-0.5 shadow-sm"
