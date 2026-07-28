@@ -14,15 +14,22 @@ logger = logging.getLogger("chatbot.ingest")
 
 VECTORSTORE_FILE = str(Path(__file__).parent / "vectorstore.json")
 
+_embeddings = None
+_retriever = None
+
 
 def get_embeddings() -> GoogleGenerativeAIEmbeddings:
+    global _embeddings
+    if _embeddings is not None:
+        return _embeddings
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
-    return GoogleGenerativeAIEmbeddings(
+    _embeddings = GoogleGenerativeAIEmbeddings(
         model=os.getenv("GEMINI_EMBEDDING_MODEL", "models/gemini-embedding-001"),
         google_api_key=api_key,
     )
+    return _embeddings
 
 
 def build_vectorstore() -> int:
@@ -30,6 +37,7 @@ def build_vectorstore() -> int:
     Fetch products from the Express API, create LangChain Document objects,
     and persist them into a local InMemoryVectorStore dumped to JSON.
     """
+    global _retriever
     express_url = os.getenv("EXPRESS_API_URL", "http://localhost:5000").rstrip("/")
     url = f"{express_url}/api/products"
     logger.info(f"Fetching products from {url}...")
@@ -78,6 +86,7 @@ def build_vectorstore() -> int:
         embedding=embeddings,
     )
     vectorstore.dump(VECTORSTORE_FILE)
+    _retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
 
     logger.info(f"Successfully built InMemoryVectorStore with {len(documents)} documents.")
     return len(documents)
@@ -88,6 +97,10 @@ def get_retriever():
     Load the persisted InMemoryVectorStore and return a k=4 retriever.
     If the vectorstore file does not exist, attempt to build it first.
     """
+    global _retriever
+    if _retriever is not None:
+        return _retriever
+
     if not Path(VECTORSTORE_FILE).exists():
         logger.info("vectorstore.json not found when loading retriever. Attempting to ingest catalog...")
         try:
@@ -100,4 +113,6 @@ def get_retriever():
         VECTORSTORE_FILE,
         embedding=embeddings,
     )
-    return vectorstore.as_retriever(search_kwargs={"k": 4})
+    _retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
+    return _retriever
+

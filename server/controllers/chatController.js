@@ -29,15 +29,45 @@ const chatWithAssistant = async (req, res, next) => {
       process.env.CHATBOT_SERVICE_URL || "http://localhost:8000"
     ).replace(/\/$/, "");
 
+    const makeChatRequest = async () => {
+      return await axios.post(
+        `${chatbotUrl}/chat`,
+        {
+          message: message.trim(),
+          history: Array.isArray(history) ? history : [],
+        },
+        { timeout: 60000 }
+      );
+    };
+
     try {
-      const response = await axios.post(`${chatbotUrl}/chat`, {
-        message: message.trim(),
-        history: Array.isArray(history) ? history : [],
-      }, { timeout: 60000 }); // 60s timeout to handle Render cold starts
+      const response = await makeChatRequest();
       return res.json(response.data);
     } catch (error) {
-      console.error("Chatbot microservice error:", error.message);
-      const isTimeout = error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
+      const isTimeout =
+        error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
+
+      // Retry once if it was a timeout (cold start waking up)
+      if (isTimeout) {
+        try {
+          console.log("Chatbot timeout on 1st attempt, retrying once...");
+          const retryResponse = await makeChatRequest();
+          return res.json(retryResponse.data);
+        } catch (retryError) {
+          console.error("Chatbot retry also failed:", {
+            code: retryError.code,
+            status: retryError.response?.status,
+            body: retryError.response?.data,
+          });
+        }
+      }
+
+      console.error("Chatbot error:", {
+        code: error.code,
+        status: error.response?.status,
+        body: error.response?.data,
+      });
+
       return res.status(502).json({
         message: isTimeout
           ? "Chat assistant is waking up, please try again in a moment."
@@ -49,6 +79,25 @@ const chatWithAssistant = async (req, res, next) => {
   }
 };
 
+// @desc    Wake up / health check AI assistant microservice
+// @route   GET /api/chat/health
+// @access  Public
+const wakeupChatbot = async (req, res) => {
+  const chatbotUrl = (
+    process.env.CHATBOT_SERVICE_URL || "http://localhost:8000"
+  ).replace(/\/$/, "");
+
+  try {
+    await axios.get(`${chatbotUrl}/health`, { timeout: 90000 });
+    res.json({ status: "ok" });
+  } catch (error) {
+    console.error("Chatbot health ping failed:", error.message);
+    res.status(502).json({ status: "waking" });
+  }
+};
+
 module.exports = {
   chatWithAssistant,
+  wakeupChatbot,
 };
+

@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import useChatStore from "@/store/chatStore";
 import useAuthStore from "@/store/authStore";
 import { useTheme } from "@/context/ThemeContext";
-import { sendMessage } from "@/services/chatService";
+import { sendMessage, wakeupChatbot } from "@/services/chatService";
 
 const formatMessageContent = (text) => {
   if (!text) return null;
@@ -96,12 +96,15 @@ const ChatWidget = () => {
 
   useEffect(() => {
     if (isOpen) {
+      // Pre-warm the Python chatbot container in the background as soon as widget opens
+      wakeupChatbot();
       scrollToBottom();
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
     }
   }, [isOpen, messages, isLoading]);
+
 
   const handleSend = async (e) => {
     e?.preventDefault();

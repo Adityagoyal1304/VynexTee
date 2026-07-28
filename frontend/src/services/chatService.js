@@ -21,5 +21,17 @@ export const sendMessage = async (message, history = []) => {
   return data;
 };
 
-const chatService = { sendMessage };
+/**
+ * Wake up the AI chatbot service in the background.
+ */
+export const wakeupChatbot = async () => {
+  try {
+    await api.get("/chat/health");
+  } catch (error) {
+    // Ignore errors for background wakeup
+  }
+};
+
+const chatService = { sendMessage, wakeupChatbot };
 export default chatService;
+

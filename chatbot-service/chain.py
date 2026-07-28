@@ -46,17 +46,24 @@ def get_history(input_dict: dict) -> List[BaseMessage]:
     return input_dict.get("history", [])
 
 
+_llm = None
+
 def get_llm():
+    global _llm
+    if _llm is not None:
+        return _llm
     api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("GOOGLE_API_KEY environment variable is not set")
     # Using gemini-flash-latest as the standard free tier flash model in Google GenAI
     model_name = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
-    return ChatGoogleGenerativeAI(
+    _llm = ChatGoogleGenerativeAI(
         model=model_name,
         temperature=0.3,
         google_api_key=api_key,
     )
+    return _llm
+
 
 
 def run_chat_chain(question: str, history: List[BaseMessage]) -> str:
