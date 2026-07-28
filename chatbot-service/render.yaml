@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: vynextee-chatbot
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: EXPRESS_API_URL
+        sync: false          # Set to your production Express API URL

@@ -33,12 +33,15 @@ const chatWithAssistant = async (req, res, next) => {
       const response = await axios.post(`${chatbotUrl}/chat`, {
         message: message.trim(),
         history: Array.isArray(history) ? history : [],
-      });
+      }, { timeout: 60000 }); // 60s timeout to handle Render cold starts
       return res.json(response.data);
     } catch (error) {
       console.error("Chatbot microservice error:", error.message);
+      const isTimeout = error.code === "ECONNABORTED" || error.code === "ETIMEDOUT";
       return res.status(502).json({
-        message: "Chat assistant is unavailable right now.",
+        message: isTimeout
+          ? "Chat assistant is waking up, please try again in a moment."
+          : "Chat assistant is unavailable right now.",
       });
     }
   } catch (error) {
