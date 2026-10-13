@@ -9,9 +9,7 @@ const connectDB = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      bufferCommands: false,
-    });
+    const conn = await mongoose.connect(process.env.MONGO_URI);
     cachedConnection = conn;
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     return conn;

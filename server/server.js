@@ -18,6 +18,15 @@ connectDB();
 
 const app = express();
 
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use(cors({
   origin: [
     process.env.CLIENT_URL,
