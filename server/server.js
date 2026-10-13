@@ -41,5 +41,10 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`));
-// Triggered restart from AI
+// Export app for Vercel Serverless Functions
+module.exports = app;
+
+// Only listen when running locally
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, console.log(`Server running on port ${PORT}`));
+}

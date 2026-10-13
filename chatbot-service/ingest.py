@@ -11,8 +11,18 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("chatbot.ingest")
+# Define bundled and writable paths
+BUNDLED_VECTORSTORE = Path(__file__).parent / "vectorstore.json"
+VECTORSTORE_FILE = "/tmp/vectorstore.json" if os.getenv("VERCEL") else str(BUNDLED_VECTORSTORE)
 
-VECTORSTORE_FILE = str(Path(__file__).parent / "vectorstore.json")
+# On Vercel, copy pre-built vectorstore to /tmp on boot if not already present
+if os.getenv("VERCEL") and not Path(VECTORSTORE_FILE).exists() and BUNDLED_VECTORSTORE.exists():
+    try:
+        import shutil
+        shutil.copyfile(BUNDLED_VECTORSTORE, VECTORSTORE_FILE)
+    except Exception as e:
+        logging.getLogger("chatbot.ingest").warning(f"Could not copy vectorstore to /tmp: {e}")
+
 
 _embeddings = None
 _retriever = None
